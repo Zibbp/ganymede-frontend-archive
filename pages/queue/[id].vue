@@ -1,0 +1,82 @@
+<template>
+  <div>
+    <div
+      v-if="showLogModal"
+      class="modal w-h-screen w-w-full w-fixed w-z-10 w-left-0 w-top-0 w-flex w-justify-center w-items-center w-bg-black w-bg-opacity-50"
+    >
+      <QueueLogModal v-if="showLogModal" :queue="queue" :type="type" />
+    </div>
+    <QueueHeader :queue="queue" />
+    <div class="w-container w-mx-auto w-mt-6">
+      <div><QueueVodTimeline :key="vodTimelineReload" :queue="queue" /></div>
+      <div class="w-grid w-grid-cols-12 w-mt-4">
+        <div
+          class="w-col-span-12 sm:w-col-span-12 md:w-col-span-12 lg:w-col-span-6 xl:w-col-span-6 2xl:w-col-span-6 w-full"
+        >
+          <QueueVideoTimeline :key="vodTimelineReload" :queue="queue" />
+        </div>
+
+        <div
+          class="w-col-span-12 sm:w-col-span-12 md:w-col-span-12 lg:w-col-span-6 xl:w-col-span-6 2xl:w-col-span-6 w-full"
+        >
+          <QueueChatTimeline :key="vodTimelineReload" :queue="queue" />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { useInterval } from "@vueuse/core";
+const route = useRoute();
+const config = useRuntimeConfig().public;
+const { $bus } = useNuxtApp();
+
+const timer = ref();
+
+// const { data: queue, refresh } = await useFetch(
+//   () => `${config.apiURL}/api/v1/queue/${route.params.id}`
+// );
+
+const { data: queue, refresh } = await useAsyncData(
+  `queue-${route.params.id}`,
+  () => $fetch(`${config.apiURL}/api/v1/queue/${route.params.id}`)
+);
+
+const intervalId = ref();
+const vodTimelineReload = ref(0);
+const showLogModal = ref(false);
+const type = ref();
+
+// const refresh = () => refreshNuxtData(`queue-${route.params.id}`);
+
+onMounted(async () => {
+  timer.value = window.setInterval(async () => {
+    // refreshNuxtData(`queue-${route.params.id}`);
+    refresh();
+    // Nuxt3 data fetching reload is having issues updating data in the page once fetched.
+    // This is a temporary workaround to recreate the components with new data.
+    vodTimelineReload.value++;
+  }, 1000);
+});
+
+const displayLogModal = () => {
+  type.value = "video-convert";
+  showLogModal.value = true;
+};
+
+$bus.$on("close-log-modal", () => {
+  showLogModal.value = false;
+});
+
+$bus.$on("show-log-modal", (logType) => {
+  type.value = logType.logType;
+  showLogModal.value = true;
+});
+
+onUnmounted(() => {
+  clearInterval(timer.value);
+});
+</script>
+
+<style lang="scss" scoped></style>

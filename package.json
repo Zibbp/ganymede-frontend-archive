@@ -1,0 +1,30 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview"
+  },
+  "devDependencies": {
+    "@vueuse/core": "^8.7.5",
+    "@vueuse/nuxt": "^8.7.5",
+    "nuxt": "3.0.0-rc.4",
+    "nuxt-windicss": "^2.4.2"
+  },
+  "dependencies": {
+    "@nuxt/kit": "^3.0.0-rc.4",
+    "@nuxtjs-alt/axios": "^1.0.12",
+    "@pinia/nuxt": "^0.1.9",
+    "axios": "^0.27.2",
+    "axios-retry": "^3.3.1",
+    "dayjs": "^1.11.3",
+    "mitt": "^3.0.0",
+    "pinia": "^2.0.14",
+    "plyr": "^3.7.2",
+    "primeflex": "^3.2.1",
+    "primeicons": "^5.0.0",
+    "primevue": "^3.15.0",
+    "sass": "^1.53.0"
+  }
+}
