@@ -32,11 +32,18 @@
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Button from "primevue/button";
+import { useApi } from "~/composables/useApi";
 const router = useRouter();
 const config = useRuntimeConfig().public;
 
 const { data: queueItems } = await useAsyncData(`queue-items`, () =>
-  $fetch(`${config.apiURL}/api/v1/queue?processing=true`)
+  useApi("/api/v1/queue", {
+    method: "GET",
+    params: {
+      processing: true,
+    },
+    credentials: "include",
+  })
 );
 </script>
 

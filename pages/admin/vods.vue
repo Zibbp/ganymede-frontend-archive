@@ -1,8 +1,6 @@
 <template>
   <div>
-    <div>
-      <AdminStats />
-    </div>
+    <AdminVodsTable />
   </div>
 </template>
 

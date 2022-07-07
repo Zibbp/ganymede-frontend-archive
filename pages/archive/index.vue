@@ -8,6 +8,10 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+definePageMeta({
+  middleware: ["auth-guard", "archiver-role-guard"],
+});
+</script>
 
 <style lang="scss" scoped></style>

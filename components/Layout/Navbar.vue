@@ -12,6 +12,7 @@
       <Menubar :model="items">
         <template #item="{ item }">
           <NuxtLink
+            v-if="authStore.user.role == item.role"
             :to="item.to"
             custom
             v-slot="{ href, route, navigate, isActive, isExactActive }"
@@ -85,18 +86,55 @@ const items = ref([
   {
     label: "Archive",
     to: "/archive",
+    visible: () => {
+      let visibleBoolean;
+      if (authStore.isAuthenticated) {
+        visibleBoolean =
+          authStore.user.role === "archiver" ||
+          authStore.user.role === "editor" ||
+          authStore.user.role === "admin";
+      } else {
+        visibleBoolean = false;
+      }
+      return visibleBoolean;
+    },
   },
   {
     label: "Queue",
     to: "/queue",
+    visible: () => {
+      let visibleBoolean;
+      if (authStore.isAuthenticated) {
+        visibleBoolean =
+          authStore.user.role === "archiver" ||
+          authStore.user.role === "editor" ||
+          authStore.user.role === "admin";
+      } else {
+        visibleBoolean = false;
+      }
+      return visibleBoolean;
+    },
   },
   {
     label: "Admin",
-    to: "/admin",
-  },
-  {
-    label: "Login",
-    to: "/login",
+    icon: "pi pi-fw",
+    items: [
+      { label: "Home", icon: "pi pi-home", to: "/admin" },
+      { label: "Vods", icon: "pi pi-video", to: "/admin/vods" },
+      { label: "Queue", icon: "pi pi-align-justify", to: "/admin" },
+      { label: "Channels", icon: "pi pi-id-card", to: "/admin" },
+      { label: "Users", icon: "pi pi-user", to: "/admin" },
+      { label: "Settings", icon: "pi pi-cog", to: "/admin" },
+    ],
+    visible: () => {
+      let visibleBoolean;
+      if (authStore.isAuthenticated) {
+        visibleBoolean = authStore.user.role === "admin";
+      } else {
+        visibleBoolean = false;
+      }
+      return visibleBoolean;
+    },
   },
 ]);
 </script>

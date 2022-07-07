@@ -73,10 +73,6 @@
 
 <script setup>
 import Timeline from "primevue/timeline";
-import Button from "primevue/button";
-import ConfirmDialog from "primevue/confirmdialog";
-import { useToast } from "primevue/usetoast";
-import { useConfirm } from "primevue/useconfirm";
 const { $bus } = useNuxtApp();
 
 const props = defineProps({
@@ -90,41 +86,27 @@ const customTimelineData = ref([
   {
     name: "Chat Download",
     status: props.queue.task_chat_download,
-    json_name: "task_chat_download",
+    json_name: "chat_download",
     log_preview: true,
     log_name: "chat",
   },
   {
     name: "Chat Render",
     status: props.queue.task_chat_render,
-    json_name: "task_chat_render",
+    json_name: "chat_render",
     log_preview: true,
     log_name: "chat-render",
   },
   {
     name: "Chat Move",
     status: props.queue.task_chat_move,
-    json_name: "task_chat_move",
+    json_name: "chat_move",
   },
 ]);
 
-const confirm = useConfirm();
-const toast = useToast();
-
 const confirmStepRestart = (stepName) => {
-  confirm.require({
-    message: "Are you sure you want to restart this step?",
-    header: "Confirmation",
-    icon: "pi pi-exclamation-triangle",
-    accept: () => {
-      toast.add({
-        severity: "info",
-        summary: "Confirmed",
-        detail: `Restarting ${stepName}`,
-        life: 3000,
-      });
-    },
-    reject: () => {},
+  $bus.$emit("show-restart-dialog", {
+    task: stepName,
   });
 };
 

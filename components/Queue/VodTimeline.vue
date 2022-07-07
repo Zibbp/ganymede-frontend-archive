@@ -49,10 +49,7 @@
 
 <script setup>
 import Timeline from "primevue/timeline";
-import Button from "primevue/button";
-import ConfirmDialog from "primevue/confirmdialog";
-import { useToast } from "primevue/usetoast";
-import { useConfirm } from "primevue/useconfirm";
+const { $bus } = useNuxtApp();
 
 const props = defineProps({
   queue: {
@@ -79,23 +76,9 @@ const customTimelineData = ref([
   },
 ]);
 
-const confirm = useConfirm();
-const toast = useToast();
-
 const confirmStepRestart = (stepName) => {
-  confirm.require({
-    message: "Are you sure you want to restart this step?",
-    header: "Confirmation",
-    icon: "pi pi-exclamation-triangle",
-    accept: () => {
-      toast.add({
-        severity: "info",
-        summary: "Confirmed",
-        detail: `Restarting ${stepName}`,
-        life: 3000,
-      });
-    },
-    reject: () => {},
+  $bus.$emit("show-restart-dialog", {
+    task: stepName,
   });
 };
 </script>

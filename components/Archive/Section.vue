@@ -42,7 +42,7 @@ import Checkbox from "primevue/checkbox";
 import Dropdown from "primevue/dropdown";
 import Button from "primevue/button";
 import { useToast } from "primevue/usetoast";
-const { $axios } = useNuxtApp();
+import { useApi } from "~/composables/useApi";
 const config = useRuntimeConfig().public;
 
 const toast = useToast();
@@ -70,24 +70,31 @@ const archiveVod = async () => {
   loading.value = true;
 
   try {
-    const archiveVodReq = await $axios.post(
-      `${config.apiURL}/api/v1/archive/vod`,
-      {
+    const archiveVodResp = await useApi("/api/v1/archive/vod", {
+      method: "POST",
+      body: {
         vod_id: vodId.value,
         quality: quality.value,
         chat: chat.value,
       },
-      { withCredentials: true }
-    );
+      credentials: "include",
+    });
     loading.value = false;
-    console.log(archiveVodReq);
+    toast.add({
+      severity: "success",
+      summary: "Vod added to queue",
+      life: 3000,
+    });
+    // Delay 1 second before navigating to queue page
+    // in hopes that the thumbnail gets downloaded in time
+    setTimeout(() => navigateTo(`/queue/${archiveVodResp.queue.id}`), 1000);
   } catch (error) {
     loading.value = false;
     console.error("Error archiving vod:", error);
     toast.add({
       severity: "error",
-      summary: "Error",
-      detail: "Error archiving vod, please check console for more info.",
+      summary: "Error Archiving Vod",
+      detail: `${error.data.message}`,
       life: 3000,
     });
   }

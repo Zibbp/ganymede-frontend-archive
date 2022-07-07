@@ -20,6 +20,7 @@
 import { useAuthStore } from "~/stores/AuthStore";
 import { useDark } from "@vueuse/core";
 import { ref } from "vue";
+
 const { $bus } = useNuxtApp();
 
 const isDark = useDark();

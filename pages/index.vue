@@ -1,7 +1,7 @@
 <template>
   <div class="p-component">
     <h5>Basic</h5>
-    <Button label="Submit" />
+    <Button @click="testApi()" label="Submit" />
     <Button label="Disabled" disabled="true" />
     <Button label="Link" class="p-button-link" />
     <h5>Addons</h5>
@@ -26,10 +26,27 @@
 
 <script setup lang="ts">
 import { useDark, useToggle } from "@vueuse/core";
+import { useApi } from "~/composables/useApi";
 
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
 const { x, y } = useMouse();
+
+const testApi = async () => {
+  try {
+    const test = await useApi("/api/v1/channel", {
+      method: "POST",
+      body: {
+        name: "fetch-api1",
+        display_name: "Fetch API1",
+        image_path: "/vods/zibbp/profile.png",
+      },
+      credentials: "include",
+    });
+  } catch (error) {
+    console.log("INDEX ERROR:", error.data.message);
+  }
+};
 </script>
 
 <style lang="scss">

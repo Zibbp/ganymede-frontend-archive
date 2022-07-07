@@ -49,6 +49,17 @@ export const useAuthStore = defineStore('AuthStore', {
                 }
 
             }
+        },
+        async refreshToken() {
+            // Attempt to refresh token
+            const { $axios } = useNuxtApp()
+            try {
+                await $axios.post(`${this.apiURL}/api/v1/auth/refresh`, {}, { withCredentials: true })
+            } catch (error) {
+                // User is not authenticated
+                this.user = null
+                this.isAuthenticated = false
+            }
         }
 
     },

@@ -48,6 +48,7 @@
 
 <script setup>
 import { useToast } from "primevue/usetoast";
+import { useApi } from "~/composables/useApi";
 const config = useRuntimeConfig().public;
 const { $bus } = useNuxtApp();
 
@@ -67,10 +68,29 @@ const props = defineProps({
   },
 });
 
+const { data: logResp, refresh } = await useAsyncData(
+  `queue-${props.queue.id}-log-${props.type}`,
+  () =>
+    useApi(`/api/v1/queue/${props.queue.id}/log`, {
+      method: "GET",
+      params: {
+        type: props.type,
+      },
+      credentials: "include",
+    })
+);
+
+const scrollToElement = () => {
+  const element = document.getElementById("bottomLogResponse");
+  element.scrollIntoView({ behavior: "smooth" });
+};
+
+logResponse.value = logResp;
+
 onMounted(async () => {
-  fetchLog();
   timer.value = window.setInterval(() => {
-    fetchLog();
+    refresh();
+    scrollToElement();
   }, 1000);
 });
 
@@ -90,11 +110,6 @@ const fetchLog = async () => {
       life: 3000,
     });
   }
-};
-
-const scrollToElement = () => {
-  const element = document.getElementById("bottomLogResponse");
-  element.scrollIntoView({ behavior: "smooth" });
 };
 
 const closeModal = () => {
