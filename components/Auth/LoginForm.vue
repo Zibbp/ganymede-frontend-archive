@@ -17,13 +17,14 @@
     <form @submit.prevent="login()">
       <div>
         <label for="email1" class="block text-900 font-medium mb-2"
-          >Email</label
+          >Username</label
         >
         <InputText
-          id="email1"
+          id="username"
           v-model="username"
           type="text"
           class="w-full mb-3"
+          autocomplete="username"
           required
         />
 
@@ -35,6 +36,7 @@
           v-model="password"
           type="password"
           class="w-full mb-3"
+          autoComplete="current-password"
           required
         />
 

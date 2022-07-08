@@ -4,9 +4,10 @@
 
 <script setup>
 import { useAuthStore } from "~/stores/AuthStore";
+import { useAuthGuard } from "~/composables/useGuard";
 
-definePageMeta({
-  middleware: ["auth-guard"],
+onMounted(() => {
+  useAuthGuard();
 });
 
 const authStore = useAuthStore();

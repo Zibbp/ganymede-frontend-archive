@@ -51,7 +51,7 @@
             :rowsPerPageOptions="[5, 10, 25]"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
             responsiveLayout="scroll"
-            rowHover="true"
+            :rowHover="rowHover"
           >
             <template #header>
               <div
@@ -155,64 +155,70 @@
         </div>
 
         <Dialog
-          v-model:visible="productDialog"
+          v-model:visible="vodDialog"
           :style="{ width: '450px' }"
-          header="Product Details"
+          header="VOD"
           :modal="true"
           class="p-fluid"
         >
           <img
-            src="https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png"
-            :alt="product.image"
-            class="product-image"
-            v-if="product.image"
+            v-if="vod.edit"
+            :src="config.cdnURL + vod.web_thumbnail_path"
+            class="product-image border-round-sm w-mb-1"
           />
           <div class="field">
-            <label for="name">Name</label>
-            <InputText
-              id="name"
-              v-model.trim="product.name"
-              required="true"
-              autofocus
-              :class="{ 'p-invalid': submitted && !product.name }"
-            />
-            <small class="p-error" v-if="submitted && !product.name"
-              >Name is required.</small
-            >
+            <label for="id">ID</label>
+            <InputText id="id" v-model="vod.id" disabled />
           </div>
           <div class="field">
-            <label for="description">Description</label>
-            <Textarea
-              id="description"
-              v-model="product.description"
+            <label for="ext_id"
+              >External ID
+              <i @click="randExtId()" class="pi pi-sync w-cursor-pointer"></i
+            ></label>
+            <InputText
+              id="ext_id"
+              v-model.trim="vod.ext_id"
               required="true"
-              rows="3"
-              cols="20"
+              :class="{ 'p-invalid': submitted && !vod.ext_id }"
             />
+          </div>
+          <div class="field">
+            <label for="title">Title</label>
+            <InputText
+              id="title"
+              v-model.trim="vod.title"
+              required="true"
+              :class="{ 'p-invalid': submitted && !vod.title }"
+            />
+            <small class="p-error" v-if="submitted && !vod.title"
+              >Title is required.</small
+            >
           </div>
 
           <div class="field">
-            <label for="inventoryStatus" class="mb-3">Inventory Status</label>
+            <label for="type">Type</label>
             <Dropdown
-              id="inventoryStatus"
-              v-model="product.inventoryStatus"
-              :options="statuses"
+              id="tyle"
+              v-model="vod.type"
+              :options="vodTypes"
               optionLabel="label"
-              placeholder="Select a Status"
+              placeholder="Select a Type"
+              required="true"
+              :class="{ 'p-invalid': submitted && !vod.type }"
             >
               <template #value="slotProps">
                 <div v-if="slotProps.value && slotProps.value.value">
                   <span
-                    :class="'product-badge status-' + slotProps.value.value"
-                    >{{ slotProps.value.label }}</span
+                    :class="'vod-type-badge type-' + slotProps.value.value"
+                    >{{ slotProps.value.label.toUpperCase() }}</span
                   >
                 </div>
                 <div v-else-if="slotProps.value && !slotProps.value.value">
                   <span
                     :class="
-                      'product-badge status-' + slotProps.value.toLowerCase()
+                      'vod-type-badge type-' + slotProps.value.toLowerCase()
                     "
-                    >{{ slotProps.value }}</span
+                    >{{ slotProps.value.toUpperCase() }}</span
                   >
                 </div>
                 <span v-else>
@@ -220,70 +226,124 @@
                 </span>
               </template>
             </Dropdown>
-          </div>
-
-          <div class="field">
-            <label class="mb-3">Category</label>
-            <div class="formgrid grid">
-              <div class="field-radiobutton col-6">
-                <RadioButton
-                  id="category1"
-                  name="category"
-                  value="Accessories"
-                  v-model="product.category"
-                />
-                <label for="category1">Accessories</label>
-              </div>
-              <div class="field-radiobutton col-6">
-                <RadioButton
-                  id="category2"
-                  name="category"
-                  value="Clothing"
-                  v-model="product.category"
-                />
-                <label for="category2">Clothing</label>
-              </div>
-              <div class="field-radiobutton col-6">
-                <RadioButton
-                  id="category3"
-                  name="category"
-                  value="Electronics"
-                  v-model="product.category"
-                />
-                <label for="category3">Electronics</label>
-              </div>
-              <div class="field-radiobutton col-6">
-                <RadioButton
-                  id="category4"
-                  name="category"
-                  value="Fitness"
-                  v-model="product.category"
-                />
-                <label for="category4">Fitness</label>
-              </div>
-            </div>
+            <small class="p-error" v-if="submitted && !vod.type"
+              >Type is required.</small
+            >
           </div>
 
           <div class="formgrid grid">
             <div class="field col">
-              <label for="price">Price</label>
+              <label for="duration">Duration (seconds)</label>
               <InputNumber
-                id="price"
-                v-model="product.price"
-                mode="currency"
-                currency="USD"
-                locale="en-US"
+                id="duration"
+                v-model="vod.duration"
+                integeronly
+                required="true"
+                :useGrouping="useGrouping"
+                :class="{ 'p-invalid': submitted && !vod.duration }"
               />
+              <small class="p-error" v-if="submitted && !vod.duration"
+                >Duration is required.</small
+              >
             </div>
             <div class="field col">
-              <label for="quantity">Quantity</label>
+              <label for="views">Views</label>
               <InputNumber
-                id="quantity"
-                v-model="product.quantity"
+                id="views"
+                v-model="vod.views"
                 integeronly
+                required="true"
+                :useGrouping="useGrouping"
+                :class="{ 'p-invalid': submitted && !vod.views }"
               />
+              <small class="p-error" v-if="submitted && !vod.views"
+                >Views is required.</small
+              >
             </div>
           </div>
+
+          <div class="field">
+            <label for="resolution">Resolution</label>
+            <InputText
+              id="resolution"
+              v-model.trim="vod.resolution"
+              required="true"
+              :class="{ 'p-invalid': submitted && !vod.resolution }"
+            />
+            <small class="p-error" v-if="submitted && !vod.resolution"
+              >Resolution is required.</small
+            >
+          </div>
+
+          <div class="field">
+            <label for="streamed_at">Streamed At</label>
+            <Calendar
+              id="streamed_at"
+              v-model="vod.streamed_at"
+              required="true"
+              dateFormat="yy-mm-dd"
+              :class="{ 'p-invalid': submitted && !vod.streamed_at }"
+            />
+            <small class="p-error" v-if="submitted && !vod.streamed_at"
+              >Streamed At is required.</small
+            >
+          </div>
+
+          <div class="field">
+            <label for="thumbnail_path">Thumbnail Path</label>
+            <InputText
+              id="thumbnail_path"
+              v-model.trim="vod.thumbnail_path"
+              :title="vod.thumbnail_path"
+            />
+          </div>
+          <div class="field">
+            <label for="web_thumbnail_path">Web Thumbnail Path</label>
+            <InputText
+              id="web_thumbnail_path"
+              v-model.trim="vod.web_thumbnail_path"
+              :title="vod.web_thumbnail_path"
+              required="true"
+              :class="{ 'p-invalid': submitted && !vod.web_thumbnail_path }"
+            />
+          </div>
+          <div class="field">
+            <label for="video_path">Video Path</label>
+            <InputText
+              id="video_path"
+              v-model.trim="vod.video_path"
+              :title="vod.video_path"
+              required="true"
+              :class="{ 'p-invalid': submitted && !vod.video_path }"
+            />
+          </div>
+          <div class="field">
+            <label for="chat_path">Chat Path</label>
+            <InputText
+              id="chat_path"
+              v-model.trim="vod.chat_path"
+              :title="vod.chat_path"
+            />
+          </div>
+
+          <div class="field">
+            <label for="chat_video_path">Chat Video Path</label>
+            <InputText
+              id="chat_video_path"
+              v-model.trim="vod.chat_video_path"
+              :title="vod.chat_video_path"
+            />
+          </div>
+
+          <div class="field">
+            <label for="info_path">Info Path</label>
+            <InputText
+              id="info_path"
+              v-model.trim="vod.info_path"
+              :title="vod.info_path"
+            />
+          </div>
+
           <template #footer>
             <Button
               label="Cancel"
@@ -301,7 +361,7 @@
         </Dialog>
 
         <Dialog
-          v-model:visible="deleteProductDialog"
+          v-model:visible="deletevodDialog"
           :style="{ width: '450px' }"
           header="Confirm"
           :modal="true"
@@ -312,7 +372,7 @@
               style="font-size: 2rem"
             />
             <span v-if="product"
-              >Are you sure you want to delete <b>{{ product.name }}</b
+              >Are you sure you want to delete <b>{{ vod.name }}</b
               >?</span
             >
           </div>
@@ -321,7 +381,7 @@
               label="No"
               icon="pi pi-times"
               class="p-button-text"
-              @click="deleteProductDialog = false"
+              @click="deletevodDialog = false"
             />
             <Button
               label="Yes"
@@ -372,9 +432,20 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup"; //optional for column grouping
 import Row from "primevue/row"; //optional for row
+import Toolbar from "primevue/toolbar";
+import FileUpload from "primevue/fileupload";
+import Dialog from "primevue/dialog";
+import Textarea from "primevue/textarea";
+import Dropdown from "primevue/dropdown";
+import RadioButton from "primevue/radiobutton";
+import InputNumber from "primevue/inputnumber";
+import Calendar from "primevue/calendar";
+
 import { ref, onMounted } from "vue";
 import { FilterMatchMode } from "primevue/api";
 import { useToast } from "primevue/usetoast";
+import { v4 as uuidv4 } from "uuid";
+
 import { useApi } from "~/composables/useApi";
 import dayjs from "dayjs/esm";
 const config = useRuntimeConfig().public;
@@ -388,20 +459,24 @@ const { pending, data: vods } = useLazyAsyncData("admin-vods", () =>
 
 const toast = useToast();
 const dt = ref();
+const rowHover = ref(true);
+const useGrouping = ref(false);
 const products = ref();
-const productDialog = ref(false);
-const deleteProductDialog = ref(false);
+const vodDialog = ref(false);
+const deletevodDialog = ref(false);
 const deleteProductsDialog = ref(false);
-const product = ref({});
+const vod = ref({});
 const selectedProducts = ref();
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 const submitted = ref(false);
-const statuses = ref([
-  { label: "archive", value: "ARCHIVE" },
-  { label: "LOWSTOCK", value: "lowstock" },
-  { label: "OUTOFSTOCK", value: "outofstock" },
+const vodTypes = ref([
+  { label: "archive", value: "archive" },
+  { label: "live", value: "live" },
+  { label: "highlight", value: "highlight" },
+  { label: "upload", value: "upload" },
+  { label: "clip", value: "clip" },
 ]);
 
 const formatCurrency = (value) => {
@@ -412,24 +487,44 @@ const formatCurrency = (value) => {
     });
   return;
 };
+const randExtId = () => {
+  vod.value.ext_id = Math.floor(Math.random() * 1000000000).toString();
+};
+
+watch(
+  () => [vod.value.ext_id],
+  (cV, oV) => {
+    if (vod.new) {
+      vod.value.thumbnail_path = `/vods/${vod.value.ext_id}_${vod.value.id}/${vod.value.ext_id}-thumbnail.jpg`;
+      vod.value.web_thumbnail_path = `/vods/${vod.value.ext_id}_${vod.value.id}/${vod.value.ext_id}-web_thumbnail.jpg`;
+      vod.value.video_path = `/vods/${vod.value.ext_id}_${vod.value.id}/${vod.value.ext_id}-video.mp4`;
+      vod.value.chat_path = `/vods/${vod.value.ext_id}_${vod.value.id}/${vod.value.ext_id}-chat.json`;
+      vod.value.chat_video_path = `/vods/${vod.value.ext_id}_${vod.value.id}/${vod.value.ext_id}-chat.mp4`;
+      vod.value.info_path = `/vods/${vod.value.ext_id}_${vod.value.id}/${vod.value.ext_id}-info.json`;
+    }
+  }
+);
+
 const openNew = () => {
-  product.value = {};
+  vod.value = {};
+  vod.value.id = uuidv4();
+  vod.value.new = true;
   submitted.value = false;
-  productDialog.value = true;
+  vodDialog.value = true;
 };
 const hideDialog = () => {
-  productDialog.value = false;
+  vodDialog.value = false;
   submitted.value = false;
 };
 const saveProduct = () => {
   submitted.value = true;
 
-  if (product.value.name.trim()) {
-    if (product.value.id) {
-      product.value.inventoryStatus = product.value.inventoryStatus.value
-        ? product.value.inventoryStatus.value
-        : product.value.inventoryStatus;
-      products.value[findIndexById(product.value.id)] = product.value;
+  if (vod.value.name.trim()) {
+    if (vod.value.id) {
+      vod.value.inventoryStatus = vod.value.inventoryStatus.value
+        ? vod.value.inventoryStatus.value
+        : vod.value.inventoryStatus;
+      products.value[findIndexById(vod.value.id)] = vod.value;
       toast.add({
         severity: "success",
         summary: "Successful",
@@ -437,13 +532,13 @@ const saveProduct = () => {
         life: 3000,
       });
     } else {
-      product.value.id = createId();
-      product.value.code = createId();
-      product.value.image = "product-placeholder.svg";
-      product.value.inventoryStatus = product.value.inventoryStatus
-        ? product.value.inventoryStatus.value
+      vod.value.id = createId();
+      vod.value.code = createId();
+      vod.value.image = "product-placeholder.svg";
+      vod.value.inventoryStatus = vod.value.inventoryStatus
+        ? vod.value.inventoryStatus.value
         : "INSTOCK";
-      products.value.push(product.value);
+      products.value.push(vod.value);
       toast.add({
         severity: "success",
         summary: "Successful",
@@ -452,22 +547,23 @@ const saveProduct = () => {
       });
     }
 
-    productDialog.value = false;
-    product.value = {};
+    vodDialog.value = false;
+    vod.value = {};
   }
 };
 const editProduct = (prod) => {
-  product.value = { ...prod };
-  productDialog.value = true;
+  vod.value = { ...prod };
+  vod.value.edit = true;
+  vodDialog.value = true;
 };
 const confirmDeleteProduct = (prod) => {
-  product.value = prod;
-  deleteProductDialog.value = true;
+  vod.value = prod;
+  deletevodDialog.value = true;
 };
 const deleteProduct = () => {
-  products.value = products.value.filter((val) => val.id !== product.value.id);
-  deleteProductDialog.value = false;
-  product.value = {};
+  products.value = products.value.filter((val) => val.id !== vod.value.id);
+  deletevodDialog.value = false;
+  vod.value = {};
   toast.add({
     severity: "success",
     summary: "Successful",
@@ -528,6 +624,22 @@ const deleteSelectedProducts = () => {
   background-color: #b3e5fc;
   color: #23547b;
 }
+.type-live {
+  background-color: #eccfff;
+  color: #694382;
+}
+.type-highlight {
+  background-color: #c8e6c9;
+  color: #256029;
+}
+.type-upload {
+  background-color: #ffd8b2;
+  color: #805b36;
+}
+.type-clip {
+  background-color: #ffcdd2;
+  color: #c63737;
+}
 .table-header {
   display: flex;
   align-items: center;
@@ -539,7 +651,6 @@ const deleteSelectedProducts = () => {
 }
 
 .product-image {
-  width: 50px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 

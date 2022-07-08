@@ -91,15 +91,35 @@ export const useAuthStore = defineStore('AuthStore', {
             // }
         },
         async refreshToken() {
+            console.log('caught refresh req')
             // Attempt to refresh token
-            const { $axios } = useNuxtApp()
+
+
+
+
             try {
-                await $axios.post(`${this.apiURL}/api/v1/auth/refresh`, {}, { withCredentials: true })
+                await $fetch(`${this.apiURL}/api/v1/auth/refresh`, { method: 'POST', credentials: 'include' })
             } catch (error) {
-                // User is not authenticated
-                this.user = null
-                this.isAuthenticated = false
+                console.log('failed')
             }
+
+            // const { $axios } = useNuxtApp()
+
+            // try {
+            //     await $axios.post(`${this.apiURL}/api/v1/auth/refresh`, {}, { withCredentials: true })
+            //     console.log('refresh success')
+            // } catch (error) {
+            //     // User is not authenticated
+            //     this.user = null
+            //     this.isAuthenticated = false
+            // }
+        },
+        async populateUser(test) {
+            const userData = useState("auth-user");
+            console.log("FOUND USER DATA IN STORE", userData.value);
+            console.log(userData.value.user)
+            this.user = test;
+            this.isAuthenticated = true;
         }
 
     },

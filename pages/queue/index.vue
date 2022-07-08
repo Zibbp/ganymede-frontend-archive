@@ -5,8 +5,11 @@
 </template>
 
 <script setup>
-definePageMeta({
-  middleware: ["auth-guard", "archiver-role-guard"],
+import { useAuthGuard, useRoleGuard } from "~/composables/useGuard";
+
+onMounted(() => {
+  useAuthGuard();
+  useRoleGuard("archiver");
 });
 </script>
 

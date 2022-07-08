@@ -36,13 +36,15 @@
 import { useInterval } from "@vueuse/core";
 import { useApi } from "~/composables/useApi";
 import { useToast } from "primevue/usetoast";
+import { useAuthGuard, useRoleGuard } from "~/composables/useGuard";
 const route = useRoute();
 const config = useRuntimeConfig().public;
 const { $bus } = useNuxtApp();
 const toast = useToast();
 
-definePageMeta({
-  middleware: ["auth-guard", "archiver-role-guard"],
+onMounted(() => {
+  useAuthGuard();
+  useRoleGuard("archiver");
 });
 
 const timer = ref();
