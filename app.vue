@@ -12,7 +12,7 @@
         href="/node_modules/primevue/resources/themes/lara-dark-purple/theme.css"
       ></Link>
     </Head>
-    <NuxtLayout v-if="loaded"><NuxtPage /></NuxtLayout>
+    <NuxtLayout><NuxtPage /></NuxtLayout>
   </div>
 </template>
 
@@ -29,15 +29,10 @@ $bus.$on("toggleDark", (dark) => {
   isDark.value = dark.value;
 });
 
-const authStore = useAuthStore();
-
-const loaded = ref(false);
-
-onMounted(async () => {
-  await authStore.init();
-  console.log("App Vue Init DOne");
-  loaded.value = true;
-});
+// onMounted(async () => {
+//   await authStore.init();
+//   console.log("App Vue Init DOne");
+// });
 </script>
 
 <style>

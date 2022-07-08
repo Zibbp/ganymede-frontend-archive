@@ -10,7 +10,7 @@
 
 <script setup>
 definePageMeta({
-  middleware: ["auth-guard", "archiver-role-guard"],
+  middleware: ["auth-guard"],
 });
 </script>
 
