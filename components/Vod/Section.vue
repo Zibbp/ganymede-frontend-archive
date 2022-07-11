@@ -16,7 +16,7 @@
               <span class="w-flex">
                 No VODs found.
                 <img
-                  src="/static/images/Sadge.png"
+                  src="/images/Sadge.png"
                   alt="Sadge"
                   title="Sadge"
                   class="w-ml-1"
@@ -44,9 +44,6 @@
                 placeholder="Per Page"
                 @change="onItemsPerPageChange($event)"
               />
-            </div>
-            <div class="col-6" style="text-align: right">
-              <DataViewLayoutOptions v-model="layout" />
             </div>
           </div>
         </template>

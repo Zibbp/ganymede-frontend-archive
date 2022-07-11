@@ -2,7 +2,7 @@
   <div class="surface-card p-4 shadow-2 border-round w-full lg:w-6">
     <div class="w-text-center align-middle mb-5 w-mx-auto">
       <img
-        src="/static/images/ganymede_logo.png"
+        src="/images/ganymede_logo.png"
         alt="Image"
         class="w-w-12 w-mx-auto"
       />

@@ -20,9 +20,6 @@
               @change="onSortChange($event)"
             />
           </div>
-          <div class="col-6" style="text-align: right">
-            <DataViewLayoutOptions v-model="layout" />
-          </div>
         </div>
       </template>
 
@@ -83,7 +80,6 @@ const { data: channels, refresh } = await useAsyncData(`channels`, () =>
 
 // console.log(channels);
 
-const products = ref();
 const layout = ref("grid");
 const sortKey = ref();
 const sortOrder = ref();

@@ -4,7 +4,7 @@
       <template #start>
         <img
           alt="logo"
-          src="/static/images/ganymede_logo.png"
+          src="/images/ganymede_logo.png"
           height="40"
           class="w-h-11"
         />
@@ -43,15 +43,19 @@
           icon="pi pi-moon"
           class="p-button-rounded p-button-text p-button-plain p-button-lg"
         />
-        <NuxtLink v-if="authStore.isAuthenticated" to="/profile">
-          <Button
-            icon="pi pi-user"
-            class="p-button-rounded p-button-text p-button-plain p-button-lg"
-          />
-        </NuxtLink>
-        <NuxtLink v-if="!authStore.isAuthenticated" to="/login" class="w-ml-2">
-          <Button label="Login" class="p-button-help" />
-        </NuxtLink>
+        <span v-if="authStore.isAuthenticated">
+          <NuxtLink to="/profile">
+            <Button
+              icon="pi pi-user"
+              class="p-button-rounded p-button-text p-button-plain p-button-lg"
+            />
+          </NuxtLink>
+        </span>
+        <span v-if="!authStore.isAuthenticated">
+          <NuxtLink to="/login" class="w-ml-2">
+            <Button label="Login" class="p-button-help" />
+          </NuxtLink>
+        </span>
       </template>
     </Menubar>
   </div>
@@ -121,10 +125,10 @@ const items = ref([
     items: [
       { label: "Home", icon: "pi pi-home", to: "/admin" },
       { label: "Vods", icon: "pi pi-video", to: "/admin/vods" },
-      { label: "Queue", icon: "pi pi-align-justify", to: "/admin" },
-      { label: "Channels", icon: "pi pi-id-card", to: "/admin" },
-      { label: "Users", icon: "pi pi-user", to: "/admin" },
-      { label: "Settings", icon: "pi pi-cog", to: "/admin" },
+      { label: "Queue", icon: "pi pi-align-justify", to: "/admin/queue" },
+      { label: "Channels", icon: "pi pi-id-card", to: "/admin/channels" },
+      { label: "Users", icon: "pi pi-user", to: "/admin/users" },
+      { label: "Settings", icon: "pi pi-cog", to: "/admin/settings" },
     ],
     visible: () => {
       let visibleBoolean;

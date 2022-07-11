@@ -1,6 +1,6 @@
 <template>
   <div class="w-container w-mx-auto">
-    <AdminVodsTable />
+    <AdminChannelsTable />
   </div>
 </template>
 

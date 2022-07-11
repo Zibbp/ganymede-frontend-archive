@@ -13,8 +13,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     if (!accessCookie && !refreshCookie) {
         return
     }
-
-    if (refreshCookie) {
+    if (refreshCookie.value) {
         // If a refresh cookie is detected attempt to use the current access token
         try {
             const resp = await $fetch(`${apiURL}/api/v1/auth/me`, { method: 'GET', credentials: 'include' })
@@ -33,6 +32,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 } catch (error) {
                     // Auth refresh failed
                     console.debug("[Auth Client] Token refresh failed")
+                    throw error
                 }
             }
         }
@@ -40,4 +40,5 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
 
     return
+
 })
