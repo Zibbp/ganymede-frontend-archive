@@ -1,55 +1,45 @@
 <template>
   <div>
-    <div v-if="pending">Loading...</div>
-    <div v-else>
+    <!-- <div v-if="pending">Loading...</div> -->
+    <div>
       <div>
         <div class="card">
-          <Toolbar class="mb-4">
+          <Toolbar>
             <template #start>
+              <Button
+                @click="refreshVods"
+                icon="pi pi-refresh"
+                class="p-button-rounded p-button-secondary p-button-text"
+              />
+            </template>
+
+            <template #end>
               <Button
                 label="New"
                 icon="pi pi-plus"
                 class="p-button-success mr-2"
-                @click="openNew"
-              />
+                @click="openNew" />
               <Button
                 label="Delete"
                 icon="pi pi-trash"
                 class="p-button-danger"
                 @click="confirmDeleteSelected"
-                :disabled="!selectedProducts || !selectedProducts.length"
-              />
-            </template>
-
-            <template #end>
-              <FileUpload
-                mode="basic"
-                accept="image/*"
-                :maxFileSize="1000000"
-                label="Import"
-                chooseLabel="Import"
-                class="mr-2 inline-block"
-              />
-              <Button
-                label="Export"
-                icon="pi pi-upload"
-                class="p-button-help"
-                @click="exportCSV($event)"
-              />
-            </template>
+                :disabled="!selectedVods || !selectedVods.length"
+            /></template>
           </Toolbar>
 
           <DataTable
             ref="dt"
             :value="vods"
-            v-model:selection="selectedProducts"
+            v-model:selection="selectedVods"
             dataKey="id"
+            :loading="loading"
             :paginator="true"
-            :rows="10"
+            :rows="15"
             :filters="filters"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-            :rowsPerPageOptions="[5, 10, 25]"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+            :rowsPerPageOptions="[15, 25, 50]"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} vods"
             responsiveLayout="scroll"
             :rowHover="rowHover"
           >
@@ -57,7 +47,7 @@
               <div
                 class="table-header flex flex-column md:flex-row md:justiify-content-between"
               >
-                <h5 class="mb-2 md:m-0 p-as-md-center">Manage Products</h5>
+                <h5 class="mb-2 md:m-0 p-as-md-center">Manage VODs</h5>
                 <span class="p-input-icon-left">
                   <i class="pi pi-search" />
                   <InputText
@@ -130,10 +120,10 @@
                 >
               </template>
             </Column>
-            <Column field="created_at" header="Created At" :sortable="true">
+            <Column field="streamed_at" header="Streamed At" :sortable="true">
               <template #body="slotProps">
                 <span>{{
-                  dayjs(slotProps.data.created_at).format("YYYY/MM/DD")
+                  dayjs(slotProps.data.streamed_at).format("YYYY/MM/DD")
                 }}</span>
               </template>
             </Column>
@@ -142,12 +132,12 @@
                 <Button
                   icon="pi pi-pencil"
                   class="p-button-rounded p-button-success mr-2"
-                  @click="editProduct(slotProps.data)"
+                  @click="editVod(slotProps.data)"
                 />
                 <Button
                   icon="pi pi-trash"
                   class="p-button-rounded p-button-warning"
-                  @click="confirmDeleteProduct(slotProps.data)"
+                  @click="confirmDeleteVod(slotProps.data)"
                 />
               </template>
             </Column>
@@ -166,6 +156,10 @@
             :src="config.cdnURL + vod.web_thumbnail_path"
             class="product-image border-round-sm w-mb-1"
           />
+          <div v-if="vod.edit" class="field-checkbox w-mt-4">
+            <Checkbox id="processing" v-model="vod.processing" :binary="true" />
+            <label for="processing">Processing</label>
+          </div>
           <div class="field">
             <label for="id">ID</label>
             <InputText id="id" v-model="vod.id" disabled />
@@ -182,6 +176,48 @@
               :class="{ 'p-invalid': submitted && !vod.ext_id }"
             />
           </div>
+
+          <div class="field">
+            <label for="channel">Channel</label>
+            <Dropdown
+              v-if="!vod.edit"
+              id="channel"
+              v-model="vod.channel_id"
+              :options="channels"
+              optionLabel="display_name"
+              placeholder="Select a Channel"
+              :filter="true"
+              required="true"
+              :class="{ 'p-invalid': submitted && !vod.channel_id }"
+            >
+              <template #value="slotProps">
+                <div v-if="slotProps.value && slotProps.value.display_name">
+                  <span>{{ slotProps.value.display_name }}</span>
+                </div>
+              </template>
+            </Dropdown>
+            <Dropdown
+              v-else
+              id="channel"
+              v-model="vod.channel_id"
+              :options="channels"
+              optionLabel="display_name"
+              placeholder="Select a Channel"
+              :filter="true"
+              required="true"
+              :class="{ 'p-invalid': submitted && !vod.channel_id }"
+            >
+              <template #value="slotProps">
+                <div v-if="slotProps.value && slotProps.value.display_name">
+                  <span>{{ slotProps.value.display_name }}</span>
+                </div>
+              </template>
+            </Dropdown>
+            <small class="p-error" v-if="submitted && !vod.channel_id"
+              >Channel is required.</small
+            >
+          </div>
+
           <div class="field">
             <label for="title">Title</label>
             <InputText
@@ -319,6 +355,8 @@
           </div>
           <div class="field">
             <label for="chat_path">Chat Path</label>
+            <br />
+            <small>Omit chat paths to disable chat player.</small>
             <InputText
               id="chat_path"
               v-model.trim="vod.chat_path"
@@ -355,7 +393,7 @@
               label="Save"
               icon="pi pi-check"
               class="p-button-text"
-              @click="saveProduct"
+              @click="createVod"
             />
           </template>
         </Dialog>
@@ -367,14 +405,23 @@
           :modal="true"
         >
           <div class="confirmation-content">
-            <i
-              class="pi pi-exclamation-triangle mr-3"
-              style="font-size: 2rem"
-            />
-            <span v-if="product"
-              >Are you sure you want to delete <b>{{ vod.name }}</b
-              >?</span
-            >
+            <div v-if="vod">
+              Are you sure you want to delete the VOD titled:
+              <b>{{ vod.title }}</b
+              >?
+            </div>
+            <div>
+              <img
+                :src="config.cdnURL + vod.web_thumbnail_path"
+                class="w-mt-2"
+              />
+            </div>
+            <div class="w-mt-2">
+              <span
+                >This action will <b>NOT</b> delete VOD files. It will only
+                remove the VOD entry in the database.</span
+              >
+            </div>
           </div>
           <template #footer>
             <Button
@@ -387,13 +434,13 @@
               label="Yes"
               icon="pi pi-check"
               class="p-button-text"
-              @click="deleteProduct"
+              @click="deleteVod"
             />
           </template>
         </Dialog>
 
         <Dialog
-          v-model:visible="deleteProductsDialog"
+          v-model:visible="deleteVodsDialog"
           :style="{ width: '450px' }"
           header="Confirm"
           :modal="true"
@@ -403,22 +450,30 @@
               class="pi pi-exclamation-triangle mr-3"
               style="font-size: 2rem"
             />
-            <span v-if="product"
-              >Are you sure you want to delete the selected products?</span
-            >
+            <div>
+              <span v-if="vod"
+                >Are you sure you want to delete the selected VODs?</span
+              >
+            </div>
+            <div>
+              <span
+                >This action will <b>NOT</b> delete VOD files, only the database
+                entries.</span
+              >
+            </div>
           </div>
           <template #footer>
             <Button
               label="No"
               icon="pi pi-times"
               class="p-button-text"
-              @click="deleteProductsDialog = false"
+              @click="deleteVodsDialog = false"
             />
             <Button
               label="Yes"
               icon="pi pi-check"
               class="p-button-text"
-              @click="deleteSelectedProducts"
+              @click="deleteSelectedVods"
             />
           </template>
         </Dialog>
@@ -429,6 +484,7 @@
 
 <script setup>
 import DataTable from "primevue/datatable";
+import Checkbox from "primevue/checkbox";
 import Column from "primevue/column";
 import ColumnGroup from "primevue/columngroup"; //optional for column grouping
 import Row from "primevue/row"; //optional for row
@@ -440,7 +496,6 @@ import Dropdown from "primevue/dropdown";
 import RadioButton from "primevue/radiobutton";
 import InputNumber from "primevue/inputnumber";
 import Calendar from "primevue/calendar";
-
 import { ref, onMounted } from "vue";
 import { FilterMatchMode } from "primevue/api";
 import { useToast } from "primevue/usetoast";
@@ -449,24 +504,35 @@ import { v4 as uuidv4 } from "uuid";
 import { useApi } from "~/composables/useApi";
 import dayjs from "dayjs/esm";
 const config = useRuntimeConfig().public;
+const toast = useToast();
 
-const { pending, data: vods } = useLazyAsyncData("admin-vods", () =>
+const {
+  pending,
+  data: vods,
+  refresh,
+} = useLazyAsyncData("admin-vods", () =>
   useApi(`/api/v1/vod`, {
     method: "GET",
     credentials: "include",
+  }).catch((error) => {
+    console.error("Error fetching VODs: ", error);
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Error fetching VODs",
+      life: 3000,
+    });
   })
 );
 
-const toast = useToast();
 const dt = ref();
 const rowHover = ref(true);
 const useGrouping = ref(false);
-const products = ref();
 const vodDialog = ref(false);
 const deletevodDialog = ref(false);
-const deleteProductsDialog = ref(false);
+const deleteVodsDialog = ref(false);
 const vod = ref({});
-const selectedProducts = ref();
+const selectedVods = ref();
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
@@ -479,14 +545,33 @@ const vodTypes = ref([
   { label: "clip", value: "clip" },
 ]);
 
-const formatCurrency = (value) => {
-  if (value)
-    return value.toLocaleString("en-US", {
-      style: "currency",
-      currency: "USD",
+const channels = ref();
+const loading = ref(false);
+
+onMounted(() => {
+  // Fetch channels for VOD creation
+  useApi(`/api/v1/channel`, {
+    method: "GET",
+    credentials: "include",
+  })
+    .then((res) => (channels.value = res))
+    .catch((err) => {
+      console.error("Error fetching channels", err);
+      toast.add({
+        severity: "error",
+        summary: "Error",
+        detail: "Error fetching channels",
+        life: 3000,
+      });
     });
-  return;
+});
+
+const refreshVods = () => {
+  loading.value = true;
+  refresh();
+  loading.value = false;
 };
+
 const randExtId = () => {
   vod.value.ext_id = Math.floor(Math.random() * 1000000000).toString();
 };
@@ -516,96 +601,174 @@ const hideDialog = () => {
   vodDialog.value = false;
   submitted.value = false;
 };
-const saveProduct = () => {
+const createVod = async () => {
   submitted.value = true;
 
-  if (vod.value.name.trim()) {
-    if (vod.value.id) {
-      vod.value.inventoryStatus = vod.value.inventoryStatus.value
-        ? vod.value.inventoryStatus.value
-        : vod.value.inventoryStatus;
-      products.value[findIndexById(vod.value.id)] = vod.value;
+  if (
+    vod.value.ext_id &&
+    vod.value.channel_id &&
+    vod.value.title &&
+    vod.value.type &&
+    vod.value.duration &&
+    vod.value.views &&
+    vod.value.resolution &&
+    vod.value.streamed_at &&
+    vod.value.web_thumbnail_path &&
+    vod.value.video_path
+  ) {
+    try {
+      if (vod.value.edit == true) {
+        let editVodType = vod.value.type;
+        if (typeof editVodType === "object") {
+          editVodType = vod.value.type.value;
+        }
+        // Editing VOD
+        await useApi(`/api/v1/vod/${vod.value.id}`, {
+          method: "PUT",
+          credentials: "include",
+          body: {
+            id: vod.value.id,
+            channel_id: vod.value.channel_id.id,
+            ext_id: vod.value.ext_id,
+            processing: vod.value.processing,
+            type: editVodType,
+            title: vod.value.title,
+            duration: vod.value.duration,
+            views: vod.value.views,
+            resolution: vod.value.resolution,
+            thumbnail_path: vod.value.thumbnail_path,
+            web_thumbnail_path: vod.value.web_thumbnail_path,
+            video_path: vod.value.video_path,
+            chat_path: vod.value.chat_path,
+            chat_video_path: vod.value.chat_video_path,
+            info_path: vod.value.info_path,
+            streamed_at: vod.value.streamed_at,
+            // TEMP
+            platform: "twitch",
+          },
+        });
+
+        toast.add({
+          severity: "success",
+          summary: "Successful",
+          detail: "VOD Edited",
+          life: 3000,
+        });
+      } else {
+        // Creating VOD
+        await useApi(`/api/v1/vod`, {
+          method: "POST",
+          credentials: "include",
+          body: {
+            id: vod.value.id,
+            channel_id: vod.value.channel_id.id,
+            ext_id: vod.value.ext_id,
+            type: vod.value.type.value,
+            title: vod.value.title,
+            duration: vod.value.duration,
+            views: vod.value.views,
+            resolution: vod.value.resolution,
+            thumbnail_path: vod.value.thumbnail_path,
+            web_thumbnail_path: vod.value.web_thumbnail_path,
+            video_path: vod.value.video_path,
+            chat_path: vod.value.chat_path,
+            chat_video_path: vod.value.chat_video_path,
+            info_path: vod.value.info_path,
+            streamed_at: vod.value.streamed_at,
+            // TEMP
+            platform: "twitch",
+          },
+        });
+
+        toast.add({
+          severity: "success",
+          summary: "Successful",
+          detail: "VOD Created",
+          life: 3000,
+        });
+      }
+      vodDialog.value = false;
+      vod.value = {};
+      refreshVods();
+    } catch (error) {
+      console.error("Error creating VOD: ", error);
       toast.add({
-        severity: "success",
-        summary: "Successful",
-        detail: "Product Updated",
-        life: 3000,
-      });
-    } else {
-      vod.value.id = createId();
-      vod.value.code = createId();
-      vod.value.image = "product-placeholder.svg";
-      vod.value.inventoryStatus = vod.value.inventoryStatus
-        ? vod.value.inventoryStatus.value
-        : "INSTOCK";
-      products.value.push(vod.value);
-      toast.add({
-        severity: "success",
-        summary: "Successful",
-        detail: "Product Created",
+        severity: "error",
+        summary: "Error",
+        detail: "Error creating VOD",
         life: 3000,
       });
     }
-
-    vodDialog.value = false;
-    vod.value = {};
   }
 };
-const editProduct = (prod) => {
+
+const editVod = (prod) => {
   vod.value = { ...prod };
+  vod.value.channel_id = prod.edges.channel;
   vod.value.edit = true;
   vodDialog.value = true;
 };
-const confirmDeleteProduct = (prod) => {
+const confirmDeleteVod = (prod) => {
   vod.value = prod;
   deletevodDialog.value = true;
 };
-const deleteProduct = () => {
-  products.value = products.value.filter((val) => val.id !== vod.value.id);
-  deletevodDialog.value = false;
-  vod.value = {};
-  toast.add({
-    severity: "success",
-    summary: "Successful",
-    detail: "Product Deleted",
-    life: 3000,
-  });
+const deleteVod = async () => {
+  try {
+    await useApi(`/api/v1/vod/${vod.value.id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    deletevodDialog.value = false;
+    vod.value = {};
+
+    refreshVods();
+
+    toast.add({
+      severity: "success",
+      summary: "Successful",
+      detail: "VOD Deleted",
+      life: 3000,
+    });
+  } catch (error) {
+    console.error("Error deleting vod: " + error);
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Error deleting VOD",
+      life: 3000,
+    });
+  }
 };
-const findIndexById = (id) => {
-  let index = -1;
-  for (let i = 0; i < products.value.length; i++) {
-    if (products.value[i].id === id) {
-      index = i;
-      break;
+
+const confirmDeleteSelected = () => {
+  deleteVodsDialog.value = true;
+};
+const deleteSelectedVods = async () => {
+  for (const vod of selectedVods.value) {
+    try {
+      await useApi(`/api/v1/vod/${vod.id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error(`Error deleting VOD ${vod.id}: `, error);
+      toast.add({
+        severity: "error",
+        summary: "Error",
+        detail: `Error deleting VOD: ${vod.id}`,
+        life: 3000,
+      });
     }
   }
 
-  return index;
-};
-const createId = () => {
-  let id = "";
-  var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (var i = 0; i < 5; i++) {
-    id += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return id;
-};
-const exportCSV = () => {
-  dt.value.exportCSV();
-};
-const confirmDeleteSelected = () => {
-  deleteProductsDialog.value = true;
-};
-const deleteSelectedProducts = () => {
-  products.value = products.value.filter(
-    (val) => !selectedProducts.value.includes(val)
-  );
-  deleteProductsDialog.value = false;
-  selectedProducts.value = null;
+  deleteVodsDialog.value = false;
+  selectedVods.value = null;
+  refreshVods();
   toast.add({
     severity: "success",
     summary: "Successful",
-    detail: "Products Deleted",
+    detail: "VODs Deleted",
     life: 3000,
   });
 };
@@ -655,10 +818,15 @@ const deleteSelectedProducts = () => {
 }
 
 .confirmation-content {
-  display: flex;
   align-items: center;
   justify-content: center;
 }
+
+::v-deep(.p-toolbar) {
+  background: none !important;
+  border: 0 !important;
+}
+
 @media screen and (max-width: 960px) {
   ::v-deep(.p-toolbar) {
     flex-wrap: wrap;
