@@ -1,0 +1,17 @@
+node_modules
+.env
+.DS_Store
+.git
+.github
+.gitignore
+.idea
+.jekyll-cache
+.jekyll-metadata
+.sass-cache
+tests
+_site
+CONTRIBUTING.md
+Dockerfile
+docker-compose.yml
+_website*.json
+/vendor

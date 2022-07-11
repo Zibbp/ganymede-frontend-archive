@@ -4,22 +4,16 @@
       <Link
         v-if="!isDark"
         rel="stylesheet"
-        href="/node_modules/primevue/resources/themes/lara-light-purple/theme.css"
+        href="/theme/lara-light-purple"
       ></Link>
-      <Link
-        v-else
-        rel="stylesheet"
-        href="/node_modules/primevue/resources/themes/lara-dark-purple/theme.css"
-      ></Link>
+      <Link v-else rel="stylesheet" href="/theme/lara-dark-purple"></Link>
     </Head>
     <NuxtLayout><NuxtPage /></NuxtLayout>
   </div>
 </template>
 
 <script setup>
-import { useAuthStore } from "~/stores/AuthStore";
 import { useDark } from "@vueuse/core";
-import { ref } from "vue";
 
 const { $bus } = useNuxtApp();
 
@@ -28,11 +22,6 @@ const isDark = useDark();
 $bus.$on("toggleDark", (dark) => {
   isDark.value = dark.value;
 });
-
-// onMounted(async () => {
-//   await authStore.init();
-//   console.log("App Vue Init DOne");
-// });
 </script>
 
 <style>
