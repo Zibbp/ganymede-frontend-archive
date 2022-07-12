@@ -7,7 +7,7 @@
           <Toolbar>
             <template #start>
               <Button
-                @click="refreshChannels"
+                @click="refreshusers"
                 icon="pi pi-refresh"
                 class="p-button-rounded p-button-secondary p-button-text"
               />
@@ -15,23 +15,18 @@
 
             <template #end>
               <Button
-                label="New Manual Channel"
-                icon="pi pi-plus"
-                class="p-button-success mr-2"
-                @click="openNew" />
-              <Button
                 label="Delete"
                 icon="pi pi-trash"
                 class="p-button-danger"
                 @click="confirmDeleteSelected"
-                :disabled="!selectedChannels || !selectedChannels.length"
+                :disabled="!selectedusers || !selectedusers.length"
             /></template>
           </Toolbar>
 
           <DataTable
             ref="dt"
-            :value="channels"
-            v-model:selection="selectedChannels"
+            :value="users"
+            v-model:selection="selectedusers"
             dataKey="id"
             :loading="loading"
             :paginator="true"
@@ -39,7 +34,7 @@
             :filters="filters"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             :rowsPerPageOptions="[15, 25, 50]"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} channels"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} users"
             responsiveLayout="scroll"
             :rowHover="rowHover"
           >
@@ -47,7 +42,7 @@
               <div
                 class="table-header flex flex-column md:flex-row md:justiify-content-between"
               >
-                <h5 class="mb-2 md:m-0 p-as-md-center">Manage Channels</h5>
+                <h5 class="mb-2 md:m-0 p-as-md-center">Manage Users</h5>
                 <span class="p-input-icon-left">
                   <i class="pi pi-search" />
                   <InputText
@@ -71,9 +66,19 @@
               </template>
             </Column>
 
-            <Column field="display_name" header="Name" :sortable="true">
+            <Column field="username" header="Username" :sortable="true">
               <template #body="slotProps">
-                <span>{{ slotProps.data.display_name }}</span>
+                <span :title="slotProps.data.username" class="w-line-clamp-1">{{
+                  slotProps.data.username
+                }}</span>
+              </template>
+            </Column>
+
+            <Column field="role" header="Role" :sortable="true">
+              <template #body="slotProps">
+                <span :title="slotProps.data.role" class="w-line-clamp-1">{{
+                  slotProps.data.role
+                }}</span>
               </template>
             </Column>
 
@@ -84,17 +89,17 @@
                 }}</span>
               </template>
             </Column>
-            <Column :exportable="false">
+            <Column :exportable="false" style="min-width: 8rem">
               <template #body="slotProps">
                 <Button
                   icon="pi pi-pencil"
                   class="p-button-rounded p-button-success mr-2"
-                  @click="editChannel(slotProps.data)"
+                  @click="edituser(slotProps.data)"
                 />
                 <Button
                   icon="pi pi-trash"
                   class="p-button-rounded p-button-warning"
-                  @click="confirmDeleteChannel(slotProps.data)"
+                  @click="confirmDeleteuser(slotProps.data)"
                 />
               </template>
             </Column>
@@ -102,48 +107,58 @@
         </div>
 
         <Dialog
-          v-model:visible="channelDialog"
+          v-model:visible="userDialog"
           :style="{ width: '450px' }"
-          header="Channel"
+          header="User"
           :modal="true"
           class="p-fluid"
         >
           <div class="field">
-            <label for="name">Name</label>
+            <label for="username">Username</label>
             <InputText
-              id="name"
-              v-model.trim="channel.name"
+              id="username"
+              v-model.trim="user.username"
               required="true"
-              :class="{ 'p-invalid': submitted && !channel.name }"
+              :class="{ 'p-invalid': submitted && !user.username }"
             />
-            <small class="p-error" v-if="submitted && !channel.name"
-              >Name is required.</small
+            <small class="p-error" v-if="submitted && !user.username"
+              >Username is required.</small
             >
           </div>
 
           <div class="field">
-            <label for="display_name">Display Name</label>
-            <InputText
-              id="display_name"
-              v-model.trim="channel.display_name"
+            <label for="role">Role</label>
+            <Dropdown
+              id="role"
+              v-model="user.role"
+              :options="userRoles"
+              optionLabel="label"
+              placeholder="Select a Role"
               required="true"
-              :class="{ 'p-invalid': submitted && !channel.display_name }"
-            />
-            <small class="p-error" v-if="submitted && !channel.display_name"
-              >Display Name is required.</small
+              :class="{ 'p-invalid': submitted && !user.role }"
             >
-          </div>
-
-          <div class="field">
-            <label for="image_path">Image Path</label>
-            <InputText
-              id="image_path"
-              v-model.trim="channel.image_path"
-              required="true"
-              :class="{ 'p-invalid': submitted && !channel.image_path }"
-            />
-            <small class="p-error" v-if="submitted && !channel.image_path"
-              >Image Path is required.</small
+              <template #value="slotProps">
+                <div v-if="slotProps.value && slotProps.value.value">
+                  <span
+                    :class="'user-role-badge type-' + slotProps.value.value"
+                    >{{ slotProps.value.label.toUpperCase() }}</span
+                  >
+                </div>
+                <div v-else-if="slotProps.value && !slotProps.value.value">
+                  <span
+                    :class="
+                      'user-role-badge type-' + slotProps.value.toLowerCase()
+                    "
+                    >{{ slotProps.value.toUpperCase() }}</span
+                  >
+                </div>
+                <span v-else>
+                  {{ slotProps.placeholder }}
+                </span>
+              </template>
+            </Dropdown>
+            <small class="p-error" v-if="submitted && !user.role"
+              >Role is required.</small
             >
           </div>
 
@@ -158,21 +173,21 @@
               label="Save"
               icon="pi pi-check"
               class="p-button-text"
-              @click="createChannel"
+              @click="createuser"
             />
           </template>
         </Dialog>
 
         <Dialog
-          v-model:visible="deleteChannelDialog"
+          v-model:visible="deleteuserDialog"
           :style="{ width: '450px' }"
           header="Confirm"
           :modal="true"
         >
           <div class="confirmation-content">
-            <div v-if="channel">
-              Are you sure you want to delete <b>{{ channel.display_name }}</b
-              >'s channel?
+            <div v-if="user">
+              Are you sure you want to delete user <b>{{ user.username }}</b
+              >?
             </div>
           </div>
           <template #footer>
@@ -180,19 +195,19 @@
               label="No"
               icon="pi pi-times"
               class="p-button-text"
-              @click="deleteChannelDialog = false"
+              @click="deleteuserDialog = false"
             />
             <Button
               label="Yes"
               icon="pi pi-check"
               class="p-button-text"
-              @click="deleteChannel"
+              @click="deleteuser"
             />
           </template>
         </Dialog>
 
         <Dialog
-          v-model:visible="deleteChannelsDialog"
+          v-model:visible="deleteusersDialog"
           :style="{ width: '450px' }"
           header="Confirm"
           :modal="true"
@@ -203,8 +218,8 @@
               style="font-size: 2rem"
             />
             <div>
-              <span v-if="channel"
-                >Are you sure you want to delete the selected Channels?</span
+              <span v-if="user"
+                >Are you sure you want to delete the selected users?</span
               >
             </div>
           </div>
@@ -213,13 +228,13 @@
               label="No"
               icon="pi pi-times"
               class="p-button-text"
-              @click="deleteChannelsDialog = false"
+              @click="deleteusersDialog = false"
             />
             <Button
               label="Yes"
               icon="pi pi-check"
               class="p-button-text"
-              @click="deleteSelectedChannels"
+              @click="deleteSelectedusers"
             />
           </template>
         </Dialog>
@@ -253,18 +268,18 @@ const toast = useToast();
 
 const {
   pending,
-  data: channels,
+  data: users,
   refresh,
-} = useLazyAsyncData("admin-channels", () =>
-  useApi(`/api/v1/channel`, {
+} = useLazyAsyncData("admin-users", () =>
+  useApi(`/api/v1/user`, {
     method: "GET",
     credentials: "include",
   }).catch((error) => {
-    console.error("Error fetching channels: ", error);
+    console.error("Error fetching user: ", error);
     toast.add({
       severity: "error",
       summary: "Error",
-      detail: "Error fetching channels",
+      detail: "Error fetching users",
       life: 3000,
     });
   })
@@ -272,11 +287,11 @@ const {
 
 const dt = ref();
 const rowHover = ref(true);
-const channelDialog = ref(false);
-const deleteChannelDialog = ref(false);
-const deleteChannelsDialog = ref(false);
-const channel = ref({});
-const selectedChannels = ref();
+const userDialog = ref(false);
+const deleteuserDialog = ref(false);
+const deleteusersDialog = ref(false);
+const user = ref({});
+const selectedusers = ref();
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
@@ -284,165 +299,137 @@ const submitted = ref(false);
 
 const loading = ref(false);
 
-const refreshChannels = () => {
+const userRoles = ref([
+  { label: "admin", value: "admin" },
+  { label: "editor", value: "editor" },
+  { label: "archiver", value: "archiver" },
+  { label: "user", value: "user" },
+]);
+
+const refreshusers = () => {
   loading.value = true;
   refresh();
   loading.value = false;
 };
 
-watch(
-  () => [channel.value.name],
-  (cV, oV) => {
-    if (channel.value.new) {
-      channel.value.image_path = `/vods/${channel.value.name}/profile.png`;
-    }
-  }
-);
-
-const openNew = () => {
-  channel.value = {};
-  channel.value.new = true;
-  submitted.value = false;
-  channelDialog.value = true;
-};
 const hideDialog = () => {
-  channelDialog.value = false;
+  userDialog.value = false;
   submitted.value = false;
 };
-const createChannel = async () => {
+
+const createuser = async () => {
   submitted.value = true;
-
-  if (
-    channel.value.name &&
-    channel.value.display_name &&
-    channel.value.image_path
-  ) {
-    try {
-      if (channel.value.edit == true) {
-        // Editing Channel
-        await useApi(`/api/v1/channel/${channel.value.id}`, {
-          method: "PUT",
-          credentials: "include",
-          body: {
-            name: channel.value.name,
-            display_name: channel.value.display_name,
-            image_path: channel.value.image_path,
-          },
-        });
-
-        toast.add({
-          severity: "success",
-          summary: "Successful",
-          detail: "Channel Edited",
-          life: 3000,
-        });
-      } else {
-        // Creating Channel
-        await useApi(`/api/v1/channel`, {
-          method: "POST",
-          credentials: "include",
-          body: {
-            name: channel.value.name,
-            display_name: channel.value.display_name,
-            image_path: channel.value.image_path,
-          },
-        });
-
-        toast.add({
-          severity: "success",
-          summary: "Successful",
-          detail: "Channel Created",
-          life: 3000,
-        });
-      }
-      channelDialog.value = false;
-      channel.value = {};
-      refreshChannels();
-    } catch (error) {
-      console.error("Error creating Channel: ", error);
-      toast.add({
-        severity: "error",
-        summary: "Error",
-        detail: "Error creating Channel",
-        life: 3000,
-      });
-    }
-  }
-};
-
-const editChannel = (prod) => {
-  channel.value = { ...prod };
-  channel.value.edit = true;
-  channelDialog.value = true;
-};
-const confirmDeleteChannel = (prod) => {
-  channel.value = prod;
-  deleteChannelDialog.value = true;
-};
-const deleteChannel = async () => {
   try {
-    await useApi(`/api/v1/channel/${channel.value.id}`, {
-      method: "DELETE",
+    // If role is changed set it
+    let userRole = user.value.role;
+    if (typeof userRole === "object") {
+      userRole = user.value.role.value;
+    }
+
+    // Editing user
+    await useApi(`/api/v1/user/${user.value.id}`, {
+      method: "PUT",
       credentials: "include",
+      body: {
+        username: user.value.username,
+        role: userRole,
+      },
     });
-
-    deleteChannelDialog.value = false;
-    channel.value = {};
-
-    refreshChannels();
 
     toast.add({
       severity: "success",
       summary: "Successful",
-      detail: "Channel Deleted",
+      detail: "User Edited",
       life: 3000,
     });
+
+    userDialog.value = false;
+    user.value = {};
+    refreshusers();
   } catch (error) {
-    console.error("Error deleting channel: " + error);
+    console.error("Error editing user: ", error);
     toast.add({
       severity: "error",
       summary: "Error",
-      detail: "Error deleting Channel",
+      detail: "Error editing user",
+      life: 3000,
+    });
+  }
+};
+
+const edituser = (prod) => {
+  user.value = { ...prod };
+  user.value.edit = true;
+  userDialog.value = true;
+};
+const confirmDeleteuser = (prod) => {
+  user.value = prod;
+  deleteuserDialog.value = true;
+};
+const deleteuser = async () => {
+  try {
+    await useApi(`/api/v1/user/${user.value.id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    deleteuserDialog.value = false;
+    user.value = {};
+
+    refreshusers();
+
+    toast.add({
+      severity: "success",
+      summary: "Successful",
+      detail: "User Deleted",
+      life: 3000,
+    });
+  } catch (error) {
+    console.error("Error deleting user: " + error);
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Error deleting user",
       life: 3000,
     });
   }
 };
 
 const confirmDeleteSelected = () => {
-  deleteChannelsDialog.value = true;
+  deleteusersDialog.value = true;
 };
-const deleteSelectedChannels = async () => {
-  for (const channel of selectedChannels.value) {
+const deleteSelectedusers = async () => {
+  for (const user of selectedusers.value) {
     try {
-      await useApi(`/api/v1/channel/${channel.id}`, {
+      await useApi(`/api/v1/user/${user.id}`, {
         method: "DELETE",
         credentials: "include",
       });
     } catch (error) {
-      console.error(`Error deleting channel ${channel.name}: `, error);
+      console.error(`Error deleting user ${user.name}: `, error);
       toast.add({
         severity: "error",
         summary: "Error",
-        detail: `Error deleting channel: ${channel.name}`,
+        detail: `Error deleting user: ${user.name}`,
         life: 3000,
       });
     }
   }
 
-  deleteChannelsDialog.value = false;
-  selectedChannels.value = null;
-  refreshChannels();
+  deleteusersDialog.value = false;
+  selectedusers.value = null;
+  refreshusers();
   toast.add({
     severity: "success",
     summary: "Successful",
-    detail: "Channels Deleted",
+    detail: "Users Deleted",
     life: 3000,
   });
 };
 </script>
 
 <style lang="scss" scoped>
-.vod-type-badge {
+.user-role-badge {
   border-radius: 2px;
   padding: 0.25em 0.5rem;
   text-transform: uppercase;
@@ -450,23 +437,20 @@ const deleteSelectedChannels = async () => {
   font-size: 12px;
   letter-spacing: 0.3px;
 }
-.type-archive {
+.type-archiver {
   background-color: #b3e5fc;
   color: #23547b;
 }
-.type-live {
+.type-editor {
   background-color: #eccfff;
   color: #694382;
 }
-.type-highlight {
+.type-user {
   background-color: #c8e6c9;
   color: #256029;
 }
-.type-upload {
-  background-color: #ffd8b2;
-  color: #805b36;
-}
-.type-clip {
+
+.type-admin {
   background-color: #ffcdd2;
   color: #c63737;
 }
