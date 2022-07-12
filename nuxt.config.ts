@@ -8,6 +8,7 @@ export default defineNuxtConfig({
             cdnURL: ''
         }
     },
+    ssr: false,
     css: [
         // 'primevue/resources/themes/lara-light-purple/theme.css',
         // 'primevue/resources/themes/lara-dark-purple/theme.css',
