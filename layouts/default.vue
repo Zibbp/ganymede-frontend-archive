@@ -1,6 +1,8 @@
 <template>
   <div>
-    <LayoutNavbar />
+    <ClientOnly>
+      <LayoutNavbar />
+    </ClientOnly>
     <Toast />
     <ConfirmDialog></ConfirmDialog>
     <slot />

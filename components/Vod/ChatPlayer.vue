@@ -1,6 +1,6 @@
 <template>
   <div class="vod-chat-player">
-    <video id="vod-chat-player" class="w-full h-fit" controls></video>
+    <video id="chatplayer" class="w-full h-fit" controls></video>
   </div>
 </template>
 
@@ -31,7 +31,7 @@ const playerSources = {
 onMounted(async () => {
   const Plyr = await import("plyr");
 
-  const vodChatPlayer = new Plyr.default("#vod-chat-player", playerOptions);
+  const vodChatPlayer = new Plyr.default("#chatplayer", playerOptions);
 
   // Set player sources
   playerSources.title = "Ganymede VOD Video Chat";

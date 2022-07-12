@@ -38,7 +38,7 @@
           class="p-button-rounded p-button-text p-button-plain p-button-lg"
         />
         <Button
-          v-if="!isDark"
+          v-else
           @click="toggleDark()"
           icon="pi pi-moon"
           class="p-button-rounded p-button-text p-button-plain p-button-lg"
@@ -51,7 +51,7 @@
             />
           </NuxtLink>
         </span>
-        <span v-if="!authStore.isAuthenticated">
+        <span v-else>
           <NuxtLink to="/login" class="w-ml-2">
             <Button label="Login" class="p-button-help" />
           </NuxtLink>

@@ -1,6 +1,6 @@
 <template>
   <div class="vod-video-player">
-    <video id="vod-video-player" class="vod-video-player" controls>
+    <video id="vodplayer" class="vod-video-player" controls>
       <!-- <source
         src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
         type="video/mp4"
@@ -55,7 +55,7 @@ const playerSources = {
 onMounted(async () => {
   const Plyr = await import("plyr");
 
-  const vodVideoPlayer = new Plyr.default("#vod-video-player", playerOptions);
+  const vodVideoPlayer = new Plyr.default("#vodplayer", playerOptions);
 
   // Set player sources
   playerSources.title = props.vod.title;
