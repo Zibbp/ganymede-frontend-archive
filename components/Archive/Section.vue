@@ -49,7 +49,7 @@ const toast = useToast();
 
 const vodId = ref();
 const chat = ref(true);
-const quality = ref("source");
+const quality = ref("best");
 
 const loading = ref(false);
 
@@ -59,6 +59,7 @@ const previewVodData = ref();
 const vodNotFound = ref(false);
 
 const qualityOptions = ref([
+  { name: "Best", quality: "best" },
   { name: "Source", quality: "source" },
   { name: "720p60", quality: "720p60" },
   { name: "480p30", quality: "480p30" },
@@ -94,7 +95,7 @@ const archiveVod = async () => {
     toast.add({
       severity: "error",
       summary: "Error Archiving Vod",
-      detail: `${error.data.message}`,
+      detail: `${error._data.message}`,
       life: 3000,
     });
   }
