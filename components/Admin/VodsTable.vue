@@ -146,7 +146,7 @@
 
         <Dialog
           v-model:visible="vodDialog"
-          :style="{ width: '450px' }"
+          :style="{ width: '550px' }"
           header="VOD"
           :modal="true"
           class="p-fluid"
