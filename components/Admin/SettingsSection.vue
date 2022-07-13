@@ -6,11 +6,11 @@
       class="w-w-1/3 w-mt-4 w-bg-lara-200 w-p-4 w-rounded-lg dark:w-bg-lara-800 dark:w-text-light-400"
     >
       <form @submit.prevent="updateConfig()">
-        <div class="w-text-3xl w-text-center">Admin Settings</div>
+        <div class="w-text-3xl w-text-center">Application Settings</div>
         <div class="w-mt-1 w-mb-3">
           Before editing values,
           <a
-            href="https://github.com/Zibbp/ganymede/wiki/Admin-Settings"
+            href="https://github.com/Zibbp/ganymede/wiki/Application-Settings"
             target="_blank"
             class="w-text-blue-500"
             >read the documentation page</a
