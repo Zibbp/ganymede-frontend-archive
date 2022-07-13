@@ -32,7 +32,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 } catch (error) {
                     // Auth refresh failed
                     console.debug("[Auth Client] Token refresh failed")
-                    throw error
+
                 }
             }
         }
