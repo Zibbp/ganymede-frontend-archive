@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-bg-white dark:w-bg-ganymede-800 w-rounded w-shadow-lg w-w-10/12 md:w-w-2/3"
+    class="w-bg-white dark:w-bg-ganymede-800 dark:w-text-light-400 w-rounded w-shadow-lg w-w-10/12 md:w-w-2/3"
   >
     <!-- modal header -->
     <div

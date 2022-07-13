@@ -1,5 +1,7 @@
 <template>
-  <div class="w-bg-neutral-200 dark:w-bg-ganymede-900 w-h-auto">
+  <div
+    class="w-bg-neutral-200 dark:w-bg-ganymede-900 dark:w-text-light-400 w-h-auto"
+  >
     <div
       class="w-px-4 w-h-full w-py-3 sm:w-justify-between sm:w-items-center sm:w-flex sm:w-px-3 lg:w-px-64"
     >

@@ -1,7 +1,7 @@
 <template>
   <div class="w-h-full w-w-full">
     <div
-      class="w-px-4 w-h-full w-py-3 sm:w-justify-between sm:w-items-center sm:w-flex sm:w-px-3 lg:w-px-4"
+      class="w-px-4 w-h-full w-py-3 sm:w-justify-between sm:w-items-center sm:w-flex sm:w-px-3 lg:w-px-4 w-text-light-400"
     >
       <p class="w-font-medium w-text-center sm:w-text-left">
         <span>{{ props.vod.edges.channel.display_name }}</span>

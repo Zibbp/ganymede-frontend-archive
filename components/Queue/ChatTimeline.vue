@@ -36,7 +36,7 @@
         </span>
       </template>
       <template #content="slotProps">
-        <div class="w-flex">
+        <div class="w-flex dark:w-text-light-400">
           <span
             @click="showLogs(slotProps.item.log_name)"
             v-tooltip.top="'Logs'"

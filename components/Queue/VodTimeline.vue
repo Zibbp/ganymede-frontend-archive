@@ -3,7 +3,7 @@
     <Timeline
       :value="customTimelineData"
       align="left"
-      class="customized-timeline"
+      class="customized-timeline dark:w-text-light-400"
     >
       <template #marker="slotProps">
         <span

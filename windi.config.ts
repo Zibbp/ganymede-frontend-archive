@@ -21,6 +21,10 @@ export default defineConfig({
                 ganymede: {
                     800: '#040d19',
                     900: '#050419'
+                },
+                lara: {
+                    100: '#eff3f7',
+                    900: '#040d19'
                 }
             },
             fontFamily: {

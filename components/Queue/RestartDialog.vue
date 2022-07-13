@@ -1,5 +1,7 @@
 <template>
-  <div class="w-bg-white dark:w-bg-ganymede-800 w-rounded w-shadow-lg w-w-1/3">
+  <div
+    class="w-bg-white dark:w-bg-ganymede-800 dark:w-text-light-400 w-rounded w-shadow-lg w-w-1/3"
+  >
     <!-- modal header -->
     <div
       class="w-border-b w-px-4 w-py-2 w-flex w-justify-between w-items-center"

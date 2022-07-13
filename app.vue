@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="w-bg-lara-100 dark:w-bg-lara-900 body-class">
     <Head>
       <Link
         v-if="!isDark"
@@ -24,8 +24,17 @@ $bus.$on("toggleDark", (dark) => {
 });
 </script>
 
-<style>
+<style lang="scss">
 * {
   font-family: "Inter", sans-serif;
+}
+light-theme {
+  background-color: #eff3f7;
+}
+dark-theme {
+  background-color: #040d19;
+}
+.body-class {
+  min-height: 100vh;
 }
 </style>
