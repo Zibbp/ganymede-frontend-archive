@@ -1,5 +1,5 @@
 <template>
-  <div class="archive-section">
+  <div class="archive-section dark:w-text-neutral-400">
     <ArchiveVodCard v-if="showPreviewVodCard" :vod="previewVodData" />
     <form @submit.prevent="archiveVod()">
       <div>
