@@ -24,7 +24,9 @@ export default defineConfig({
                 },
                 lara: {
                     100: '#eff3f7',
+                    200: '#f8f9fa',
                     400: '#495057',
+                    800: '#091a32',
                     900: '#040d19'
                 }
             },
