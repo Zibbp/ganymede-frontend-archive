@@ -9,7 +9,7 @@
   "devDependencies": {
     "@vueuse/core": "^8.7.5",
     "@vueuse/nuxt": "^8.7.5",
-    "nuxt": "3.0.0-rc.4",
+    "nuxt": "^3.0.0-rc.5",
     "nuxt-windicss": "^2.4.2"
   },
   "dependencies": {
