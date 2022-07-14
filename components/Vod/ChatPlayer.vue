@@ -1,6 +1,6 @@
 <template>
   <div class="vod-chat-player">
-    <video id="chatplayer" class="w-full h-fit" controls></video>
+    <video id="chatPlayer" class="w-full h-fit" controls></video>
   </div>
 </template>
 
@@ -31,36 +31,38 @@ const playerSources = {
 onMounted(async () => {
   const Plyr = await import("plyr");
 
-  const vodChatPlayer = new Plyr.default("#chatplayer", playerOptions);
+  setTimeout(() => {
+    const vodChatPlayer = new Plyr.default("#chatPlayer", playerOptions);
 
-  // Set player sources
-  playerSources.title = "Ganymede VOD Video Chat";
+    // Set player sources
+    playerSources.title = "Ganymede VOD Video Chat";
 
-  playerSources.sources = [
-    {
-      src: `${config.cdnURL}/${props.vod.chat_video_path}`,
-      type: "video/mp4",
-    },
-  ];
-  vodChatPlayer.source = playerSources;
+    playerSources.sources = [
+      {
+        src: `${config.cdnURL}/${props.vod.chat_video_path}`,
+        type: "video/mp4",
+      },
+    ];
+    vodChatPlayer.source = playerSources;
 
-  // Event Bus
-  $bus.$on("vod-player-play", () => {
-    console.debug("[VOD Chat Player] Received play event");
-    vodChatPlayer.play();
-  });
-  $bus.$on("vod-player-pause", () => {
-    console.debug("[VOD Chat Player] Received pause event");
-    vodChatPlayer.pause();
-  });
-  $bus.$on("vod-player-seek", (time) => {
-    console.debug("[VOD Chat Player] Received seek event:", time);
-    vodChatPlayer.currentTime = time;
-  });
-  $bus.$on("vod-player-ratechange", (speed) => {
-    console.debug("[VOD Chat Player] Received ratechange event:", speed);
-    vodChatPlayer.speed = speed;
-  });
+    // Event Bus
+    $bus.$on("vod-player-play", () => {
+      console.debug("[VOD Chat Player] Received play event");
+      vodChatPlayer.play();
+    });
+    $bus.$on("vod-player-pause", () => {
+      console.debug("[VOD Chat Player] Received pause event");
+      vodChatPlayer.pause();
+    });
+    $bus.$on("vod-player-seek", (time) => {
+      console.debug("[VOD Chat Player] Received seek event:", time);
+      vodChatPlayer.currentTime = time;
+    });
+    $bus.$on("vod-player-ratechange", (speed) => {
+      console.debug("[VOD Chat Player] Received ratechange event:", speed);
+      vodChatPlayer.speed = speed;
+    });
+  }, 50);
 });
 </script>
 
