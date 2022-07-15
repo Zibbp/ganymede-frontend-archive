@@ -7,7 +7,7 @@
           <Toolbar>
             <template #start>
               <Button
-                @click="refreshChannels"
+                @click="refreshlives"
                 icon="pi pi-refresh"
                 class="p-button-rounded p-button-secondary p-button-text"
               />
@@ -15,28 +15,23 @@
 
             <template #end>
               <Button
-                label="New Manual Channel"
+                label="Add Watched Channel"
                 icon="pi pi-plus"
                 class="p-button-success mr-2"
                 @click="openNew" />
-              <Button
-                label="Add Twitch Channel"
-                icon="pi pi-plus"
-                class="p-button-help mr-2"
-                @click="addNewTwitch" />
               <Button
                 label="Delete"
                 icon="pi pi-trash"
                 class="p-button-danger"
                 @click="confirmDeleteSelected"
-                :disabled="!selectedChannels || !selectedChannels.length"
+                :disabled="!selectedlives || !selectedlives.length"
             /></template>
           </Toolbar>
 
           <DataTable
             ref="dt"
-            :value="channels"
-            v-model:selection="selectedChannels"
+            :value="lives"
+            v-model:selection="selectedlives"
             dataKey="id"
             :loading="loading"
             :paginator="true"
@@ -44,7 +39,7 @@
             :filters="filters"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             :rowsPerPageOptions="[15, 25, 50]"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} channels"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} lives"
             responsiveLayout="scroll"
             :rowHover="rowHover"
           >
@@ -52,7 +47,9 @@
               <div
                 class="table-header flex flex-column md:flex-row md:justiify-content-between"
               >
-                <h5 class="mb-2 md:m-0 p-as-md-center">Manage Channels</h5>
+                <h5 class="mb-2 md:m-0 p-as-md-center">
+                  Manage Live Watched Channels
+                </h5>
                 <span class="p-input-icon-left">
                   <i class="pi pi-search" />
                   <InputText
@@ -78,14 +75,14 @@
 
             <Column field="display_name" header="Name" :sortable="true">
               <template #body="slotProps">
-                <span>{{ slotProps.data.display_name }}</span>
+                <span>{{ slotProps.data.edges.channel.display_name }}</span>
               </template>
             </Column>
 
-            <Column field="created_at" header="Created At" :sortable="true">
+            <Column field="last_live" header="Last Live" :sortable="true">
               <template #body="slotProps">
                 <span>{{
-                  dayjs(slotProps.data.created_at).format("YYYY/MM/DD")
+                  dayjs(slotProps.data.last_live).format("YYYY/MM/DD h:mm A")
                 }}</span>
               </template>
             </Column>
@@ -94,12 +91,12 @@
                 <Button
                   icon="pi pi-pencil"
                   class="p-button-rounded p-button-success mr-2"
-                  @click="editChannel(slotProps.data)"
+                  @click="editlive(slotProps.data)"
                 />
                 <Button
                   icon="pi pi-trash"
                   class="p-button-rounded p-button-warning"
-                  @click="confirmDeleteChannel(slotProps.data)"
+                  @click="confirmDeletelive(slotProps.data)"
                 />
               </template>
             </Column>
@@ -107,49 +104,65 @@
         </div>
 
         <Dialog
-          v-model:visible="channelDialog"
+          v-model:visible="liveDialog"
           :style="{ width: '450px' }"
-          header="Channel"
+          header="Live Watched Channel"
           :modal="true"
           class="p-fluid"
         >
-          <div class="field">
-            <label for="name">Name</label>
-            <InputText
-              id="name"
-              v-model.trim="channel.name"
+          <div v-if="!live.edit" class="field">
+            <label for="channel">Channel</label>
+            <Dropdown
+              id="channel"
+              v-model="live.channel_id"
+              :options="channels"
+              optionLabel="display_name"
+              placeholder="Select a Channel"
+              :filter="true"
               required="true"
-              :class="{ 'p-invalid': submitted && !channel.name }"
-            />
-            <small class="p-error" v-if="submitted && !channel.name"
-              >Name is required.</small
+              :class="{ 'p-invalid': submitted && !live.channel_id }"
+            >
+              <template #value="slotProps">
+                <div v-if="slotProps.value && slotProps.value.display_name">
+                  <span>{{ slotProps.value.display_name }}</span>
+                </div>
+              </template>
+            </Dropdown>
+
+            <small class="p-error" v-if="submitted && !live.channel_id"
+              >Channel is required.</small
             >
           </div>
 
           <div class="field">
-            <label for="display_name">Display Name</label>
-            <InputText
-              id="display_name"
-              v-model.trim="channel.display_name"
-              required="true"
-              :class="{ 'p-invalid': submitted && !channel.display_name }"
-            />
-            <small class="p-error" v-if="submitted && !channel.display_name"
-              >Display Name is required.</small
-            >
+            <div class="field-checkbox w-mt-4">
+              <Checkbox
+                id="archive_chat"
+                v-model="live.archive_chat"
+                :binary="true"
+              />
+              <label for="archive_chat">Archive Chat</label>
+            </div>
           </div>
 
           <div class="field">
-            <label for="image_path">Image Path</label>
-            <InputText
-              id="image_path"
-              v-model.trim="channel.image_path"
+            <label for="resolution">Resolution</label>
+            <Dropdown
+              id="resolution"
+              v-model="live.resolution"
+              :options="qualityOptions"
+              optionLabel="name"
+              optionValue="quality"
+              placeholder="Select a Resolution"
               required="true"
-              :class="{ 'p-invalid': submitted && !channel.image_path }"
-            />
-            <small class="p-error" v-if="submitted && !channel.image_path"
-              >Image Path is required.</small
+              :class="{ 'p-invalid': submitted && !live.resolution }"
             >
+              <template #value="slotProps">
+                <div v-if="slotProps.value && slotProps.value.resolution">
+                  <span>{{ slotProps.value.resolution }}</span>
+                </div>
+              </template>
+            </Dropdown>
           </div>
 
           <template #footer>
@@ -163,57 +176,22 @@
               label="Save"
               icon="pi pi-check"
               class="p-button-text"
-              @click="createChannel"
+              @click="createlive"
             />
           </template>
         </Dialog>
 
         <Dialog
-          v-model:visible="newTwitchDialog"
-          :style="{ width: '450px' }"
-          header="Twitch Channel"
-          :modal="true"
-          class="p-fluid"
-        >
-          <div class="field">
-            <label for="name">Name</label>
-            <InputText
-              id="name"
-              v-model.trim="newTwitchChannel.name"
-              required="true"
-              :class="{ 'p-invalid': submitted && !newTwitchChannel.name }"
-            />
-            <small class="p-error" v-if="submitted && !newTwitchChannel.name"
-              >Name is required.</small
-            >
-          </div>
-
-          <template #footer>
-            <Button
-              label="Cancel"
-              icon="pi pi-times"
-              class="p-button-text"
-              @click="hideDialog"
-            />
-            <Button
-              label="Save"
-              icon="pi pi-check"
-              class="p-button-text"
-              @click="createTwitchChannel"
-            />
-          </template>
-        </Dialog>
-
-        <Dialog
-          v-model:visible="deleteChannelDialog"
+          v-model:visible="deleteliveDialog"
           :style="{ width: '450px' }"
           header="Confirm"
           :modal="true"
         >
           <div class="confirmation-content">
-            <div v-if="channel">
-              Are you sure you want to delete <b>{{ channel.display_name }}</b
-              >'s channel?
+            <div v-if="live">
+              Are you sure you want to delete live watched channel
+              <b>{{ live.edges.channel.display_name }}</b
+              >?
             </div>
           </div>
           <template #footer>
@@ -221,19 +199,19 @@
               label="No"
               icon="pi pi-times"
               class="p-button-text"
-              @click="deleteChannelDialog = false"
+              @click="deleteliveDialog = false"
             />
             <Button
               label="Yes"
               icon="pi pi-check"
               class="p-button-text"
-              @click="deleteChannel"
+              @click="deletelive"
             />
           </template>
         </Dialog>
 
         <Dialog
-          v-model:visible="deleteChannelsDialog"
+          v-model:visible="deletelivesDialog"
           :style="{ width: '450px' }"
           header="Confirm"
           :modal="true"
@@ -244,8 +222,9 @@
               style="font-size: 2rem"
             />
             <div>
-              <span v-if="channel"
-                >Are you sure you want to delete the selected Channels?</span
+              <span v-if="live"
+                >Are you sure you want to delete the selected live watched
+                channels?</span
               >
             </div>
           </div>
@@ -254,13 +233,13 @@
               label="No"
               icon="pi pi-times"
               class="p-button-text"
-              @click="deleteChannelsDialog = false"
+              @click="deletelivesDialog = false"
             />
             <Button
               label="Yes"
               icon="pi pi-check"
               class="p-button-text"
-              @click="deleteSelectedChannels"
+              @click="deleteSelectedlives"
             />
           </template>
         </Dialog>
@@ -294,18 +273,18 @@ const toast = useToast();
 
 const {
   pending,
-  data: channels,
+  data: lives,
   refresh,
-} = useLazyAsyncData("admin-channels", () =>
-  useApi(`/api/v1/channel`, {
+} = useLazyAsyncData("admin-lives", () =>
+  useApi(`/api/v1/live`, {
     method: "GET",
     credentials: "include",
   }).catch((error) => {
-    console.error("Error fetching channels: ", error);
+    console.error("Error fetching live watched channels: ", error);
     toast.add({
       severity: "error",
       summary: "Error",
-      detail: "Error fetching channels",
+      detail: "Error fetching live watched channels",
       life: 3000,
     });
   })
@@ -313,11 +292,11 @@ const {
 
 const dt = ref();
 const rowHover = ref(true);
-const channelDialog = ref(false);
-const deleteChannelDialog = ref(false);
-const deleteChannelsDialog = ref(false);
-const channel = ref({});
-const selectedChannels = ref();
+const liveDialog = ref(false);
+const deleteliveDialog = ref(false);
+const deletelivesDialog = ref(false);
+const live = ref({});
+const selectedlives = ref();
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
@@ -325,199 +304,176 @@ const submitted = ref(false);
 
 const loading = ref(false);
 
-const newTwitchDialog = ref(false);
-const newTwitchChannel = ref({});
+const qualityOptions = ref([
+  { name: "Best", quality: "best" },
+  { name: "Source", quality: "source" },
+  { name: "720p60", quality: "720p60" },
+  { name: "480p30", quality: "480p30" },
+  { name: "360p30", quality: "360p30" },
+  { name: "160p30", quality: "160p30" },
+]);
 
-const refreshChannels = () => {
+const channels = ref({});
+
+onMounted(() => {
+  // Fetch channels for live watched channels creation
+  useApi(`/api/v1/channel`, {
+    method: "GET",
+    credentials: "include",
+  })
+    .then((res) => (channels.value = res))
+    .catch((err) => {
+      console.error("Error fetching channels", err);
+      toast.add({
+        severity: "error",
+        summary: "Error",
+        detail: "Error fetching channels",
+        life: 3000,
+      });
+    });
+});
+
+const refreshlives = () => {
   loading.value = true;
   refresh();
   loading.value = false;
 };
 
-watch(
-  () => [channel.value.name],
-  (cV, oV) => {
-    if (channel.value.new) {
-      channel.value.image_path = `/vods/${channel.value.name}/profile.png`;
-    }
-  }
-);
-
 const openNew = () => {
-  channel.value = {};
-  channel.value.new = true;
+  live.value = {};
+  live.value.new = true;
   submitted.value = false;
-  channelDialog.value = true;
+  liveDialog.value = true;
 };
-const addNewTwitch = () => {
-  newTwitchChannel.value = {};
-  submitted.value = false;
-  newTwitchDialog.value = true;
-};
+
 const hideDialog = () => {
-  channelDialog.value = false;
+  liveDialog.value = false;
   submitted.value = false;
 };
-const createChannel = async () => {
+const createlive = async () => {
   submitted.value = true;
 
-  if (
-    channel.value.name &&
-    channel.value.display_name &&
-    channel.value.image_path
-  ) {
-    try {
-      if (channel.value.edit == true) {
-        // Editing Channel
-        await useApi(`/api/v1/channel/${channel.value.id}`, {
-          method: "PUT",
-          credentials: "include",
-          body: {
-            name: channel.value.name,
-            display_name: channel.value.display_name,
-            image_path: channel.value.image_path,
-          },
-        });
-
-        toast.add({
-          severity: "success",
-          summary: "Successful",
-          detail: "Channel Edited",
-          life: 3000,
-        });
-      } else {
-        // Creating Channel
-        await useApi(`/api/v1/channel`, {
+  try {
+    if (live.value.new) {
+      if (live.value.channel_id && live.value.resolution) {
+        // Creating live
+        await useApi(`/api/v1/live`, {
           method: "POST",
           credentials: "include",
           body: {
-            name: channel.value.name,
-            display_name: channel.value.display_name,
-            image_path: channel.value.image_path,
+            channel_id: live.value.channel_id.id,
+            resolution: live.value.resolution,
+            archive_chat: live.value.archive_chat,
           },
         });
 
         toast.add({
           severity: "success",
           summary: "Successful",
-          detail: "Channel Created",
+          detail: "Created live watched channel",
           life: 3000,
         });
+        liveDialog.value = false;
+        live.value = {};
+        refreshlives();
       }
-      channelDialog.value = false;
-      channel.value = {};
-      refreshChannels();
-    } catch (error) {
-      console.error("Error creating Channel: ", error);
-      toast.add({
-        severity: "error",
-        summary: "Error",
-        detail: "Error creating Channel",
-        life: 3000,
-      });
-    }
-  }
-};
-
-const createTwitchChannel = async () => {
-  submitted.value = true;
-  try {
-    if (newTwitchChannel.value.name) {
-      await useApi(`/api/v1/archive/channel`, {
-        method: "POST",
+    } else {
+      await useApi(`/api/v1/live/${live.value.id}`, {
+        method: "PUT",
         credentials: "include",
         body: {
-          channel_name: newTwitchChannel.value.name,
+          resolution: live.value.resolution,
+          archive_chat: live.value.archive_chat,
         },
       });
-
       toast.add({
         severity: "success",
         summary: "Successful",
-        detail: "Twitch Channel Created",
+        detail: "Updated live watched channel",
         life: 3000,
       });
-      newTwitchDialog.value = false;
-      newTwitchChannel.value = {};
-      refreshChannels();
+      liveDialog.value = false;
+      live.value = {};
+      refreshlives();
     }
   } catch (error) {
-    console.error("Error creating Twitch Channel: ", error);
+    console.error("Error creating live: ", error);
+    console.log(error.response);
     toast.add({
       severity: "error",
-      summary: "Error",
-      detail: "Error creating Twitch Channel",
+      summary: "Error Creating Live Watch Channel",
+      detail: error.response._data.message,
       life: 3000,
     });
   }
 };
 
-const editChannel = (prod) => {
-  channel.value = { ...prod };
-  channel.value.edit = true;
-  channelDialog.value = true;
+const editlive = (prod) => {
+  live.value = { ...prod };
+  live.value.edit = true;
+  liveDialog.value = true;
 };
-const confirmDeleteChannel = (prod) => {
-  channel.value = prod;
-  deleteChannelDialog.value = true;
+const confirmDeletelive = (prod) => {
+  live.value = prod;
+  deleteliveDialog.value = true;
 };
-const deleteChannel = async () => {
+const deletelive = async () => {
   try {
-    await useApi(`/api/v1/channel/${channel.value.id}`, {
+    await useApi(`/api/v1/live/${live.value.id}`, {
       method: "DELETE",
       credentials: "include",
     });
 
-    deleteChannelDialog.value = false;
-    channel.value = {};
+    deleteliveDialog.value = false;
+    live.value = {};
 
-    refreshChannels();
+    refreshlives();
 
     toast.add({
       severity: "success",
       summary: "Successful",
-      detail: "Channel Deleted",
+      detail: "Live Watched Channel Deleted",
       life: 3000,
     });
   } catch (error) {
-    console.error("Error deleting channel: " + error);
+    console.error("Error deleting live: " + error);
     toast.add({
       severity: "error",
       summary: "Error",
-      detail: "Error deleting Channel",
+      detail: "Error deleting live watched channel",
       life: 3000,
     });
   }
 };
 
 const confirmDeleteSelected = () => {
-  deleteChannelsDialog.value = true;
+  deletelivesDialog.value = true;
 };
-const deleteSelectedChannels = async () => {
-  for (const channel of selectedChannels.value) {
+const deleteSelectedlives = async () => {
+  for (const live of selectedlives.value) {
     try {
-      await useApi(`/api/v1/channel/${channel.id}`, {
+      await useApi(`/api/v1/live/${live.id}`, {
         method: "DELETE",
         credentials: "include",
       });
     } catch (error) {
-      console.error(`Error deleting channel ${channel.name}: `, error);
+      console.error(`Error deleting live ${live.name}: `, error);
       toast.add({
         severity: "error",
         summary: "Error",
-        detail: `Error deleting channel: ${channel.name}`,
+        detail: `Error deleting live: ${live.name}`,
         life: 3000,
       });
     }
   }
 
-  deleteChannelsDialog.value = false;
-  selectedChannels.value = null;
-  refreshChannels();
+  deletelivesDialog.value = false;
+  selectedlives.value = null;
+  refreshlives();
   toast.add({
     severity: "success",
     summary: "Successful",
-    detail: "Channels Deleted",
+    detail: "lives Deleted",
     life: 3000,
   });
 };

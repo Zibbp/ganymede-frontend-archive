@@ -125,6 +125,8 @@ const items = ref([
     items: [
       { label: "Home", icon: "pi pi-home", to: "/admin" },
       { label: "Vods", icon: "pi pi-video", to: "/admin/vods" },
+      { label: "Live", icon: "pi pi-video", to: "/admin/live" },
+
       { label: "Queue", icon: "pi pi-align-justify", to: "/admin/queue" },
       { label: "Channels", icon: "pi pi-id-card", to: "/admin/channels" },
       { label: "Users", icon: "pi pi-user", to: "/admin/users" },
