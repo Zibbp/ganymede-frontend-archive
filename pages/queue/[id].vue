@@ -19,13 +19,31 @@
         <div
           class="w-col-span-12 sm:w-col-span-12 md:w-col-span-12 lg:w-col-span-6 xl:w-col-span-6 2xl:w-col-span-6 w-full"
         >
-          <QueueVideoTimeline :key="vodTimelineReload" :queue="queue" />
+          <QueueLiveVideoTimeline
+            v-if="queue.live_archive"
+            :key="vodTimelineReload"
+            :queue="queue"
+          />
+          <QueueVideoTimeline
+            v-else
+            :key="vodLiveTimelineReload"
+            :queue="queue"
+          />
         </div>
 
         <div
           class="w-col-span-12 sm:w-col-span-12 md:w-col-span-12 lg:w-col-span-6 xl:w-col-span-6 2xl:w-col-span-6 w-full"
         >
-          <QueueChatTimeline :key="vodTimelineReload" :queue="queue" />
+          <QueueLiveChatTimeline
+            v-if="queue.live_archive"
+            :key="vodTimelineReload"
+            :queue="queue"
+          />
+          <QueueChatTimeline
+            v-else
+            :key="vodLiveTimelineReload"
+            :queue="queue"
+          />
         </div>
       </div>
     </div>
@@ -64,6 +82,7 @@ const { data: queue, refresh } = await useAsyncData(
 
 const intervalId = ref();
 const vodTimelineReload = ref(0);
+const vodLiveTimelineReload = ref(0);
 const showLogModal = ref(false);
 const type = ref();
 
@@ -79,6 +98,7 @@ onMounted(async () => {
     // Nuxt3 data fetching reload is having issues updating data in the page once fetched.
     // This is a temporary workaround to recreate the components with new data.
     vodTimelineReload.value++;
+    vodLiveTimelineReload.value++;
   }, 1000);
 });
 

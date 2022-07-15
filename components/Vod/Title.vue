@@ -11,7 +11,11 @@
       </p>
 
       <span class="w-text-sm">
-        <Chip class="w-ml-2" :label="props.vod.type" title="Archive Type" />
+        <Chip
+          class="w-ml-2"
+          :label="props.vod.type.toUpperCase()"
+          title="Archive Type"
+        />
         <Chip
           class="w-ml-2"
           :label="props.vod.views.toLocaleString()"
