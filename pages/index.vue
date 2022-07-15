@@ -1,5 +1,5 @@
 <template>
-  <div>Ganymede home page. Nothing to see here yet.</div>
+  <div><LandingHero /></div>
 </template>
 
 <script setup lang="ts"></script>
