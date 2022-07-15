@@ -20,6 +20,11 @@
                 class="p-button-success mr-2"
                 @click="openNew" />
               <Button
+                label="Add Twitch Channel"
+                icon="pi pi-plus"
+                class="p-button-help mr-2"
+                @click="addNewTwitch" />
+              <Button
                 label="Delete"
                 icon="pi pi-trash"
                 class="p-button-danger"
@@ -164,6 +169,42 @@
         </Dialog>
 
         <Dialog
+          v-model:visible="newTwitchDialog"
+          :style="{ width: '450px' }"
+          header="Twitch Channel"
+          :modal="true"
+          class="p-fluid"
+        >
+          <div class="field">
+            <label for="name">Name</label>
+            <InputText
+              id="name"
+              v-model.trim="newTwitchChannel.name"
+              required="true"
+              :class="{ 'p-invalid': submitted && !newTwitchChannel.name }"
+            />
+            <small class="p-error" v-if="submitted && !newTwitchChannel.name"
+              >Name is required.</small
+            >
+          </div>
+
+          <template #footer>
+            <Button
+              label="Cancel"
+              icon="pi pi-times"
+              class="p-button-text"
+              @click="hideDialog"
+            />
+            <Button
+              label="Save"
+              icon="pi pi-check"
+              class="p-button-text"
+              @click="createTwitchChannel"
+            />
+          </template>
+        </Dialog>
+
+        <Dialog
           v-model:visible="deleteChannelDialog"
           :style="{ width: '450px' }"
           header="Confirm"
@@ -284,6 +325,9 @@ const submitted = ref(false);
 
 const loading = ref(false);
 
+const newTwitchDialog = ref(false);
+const newTwitchChannel = ref({});
+
 const refreshChannels = () => {
   loading.value = true;
   refresh();
@@ -304,6 +348,11 @@ const openNew = () => {
   channel.value.new = true;
   submitted.value = false;
   channelDialog.value = true;
+};
+const addNewTwitch = () => {
+  newTwitchChannel.value = {};
+  submitted.value = false;
+  newTwitchDialog.value = true;
 };
 const hideDialog = () => {
   channelDialog.value = false;
@@ -367,6 +416,36 @@ const createChannel = async () => {
         life: 3000,
       });
     }
+  }
+};
+
+const createTwitchChannel = async () => {
+  try {
+    await useApi(`/api/v1/archive/channel`, {
+      method: "POST",
+      credentials: "include",
+      body: {
+        channel_name: newTwitchChannel.value.name,
+      },
+    });
+
+    toast.add({
+      severity: "success",
+      summary: "Successful",
+      detail: "Twitch Channel Created",
+      life: 3000,
+    });
+    newTwitchDialog.value = false;
+    newTwitchChannel.value = {};
+    refreshChannels();
+  } catch (error) {
+    console.error("Error creating Twitch Channel: ", error);
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Error creating Twitch Channel",
+      life: 3000,
+    });
   }
 };
 
