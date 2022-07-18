@@ -18,7 +18,7 @@
         />
         <Chip
           class="w-ml-2"
-          :label="props.vod.views.toLocaleString()"
+          :label="views"
           title="View Count"
           icon="pi pi-users"
         />
@@ -55,6 +55,11 @@ dayjs.extend(duration);
 
 const formattedStreamedAt = ref();
 const formmatedDuration = ref();
+const views = ref(1);
+
+if (props.vod.views > 0) {
+  views.value = props.vod.views.toLocaleString();
+}
 
 onMounted(() => {
   formattedStreamedAt.value = dayjs(props.vod.streamed_at).format("YYYY/MM/DD");
