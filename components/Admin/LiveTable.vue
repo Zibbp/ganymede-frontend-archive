@@ -306,7 +306,6 @@ const loading = ref(false);
 
 const qualityOptions = ref([
   { name: "Best", quality: "best" },
-  { name: "Source", quality: "source" },
   { name: "720p60", quality: "720p60" },
   { name: "480p30", quality: "480p30" },
   { name: "360p30", quality: "360p30" },
@@ -342,6 +341,7 @@ const refreshlives = () => {
 const openNew = () => {
   live.value = {};
   live.value.new = true;
+  live.value.archive_chat = true;
   submitted.value = false;
   liveDialog.value = true;
 };

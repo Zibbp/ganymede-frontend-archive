@@ -452,6 +452,44 @@
             </div>
 
             <div class="field col">
+              <label for="task_chat_download">Live Chat Convert</label>
+              <Dropdown
+                id="tyle"
+                v-model="queue.task_chat_convert"
+                :options="taskStatusStates"
+                optionLabel="label"
+                placeholder="Select a Status"
+                required="true"
+                :class="{
+                  'p-invalid': submitted && !queue.task_chat_convert,
+                }"
+              >
+                <template #value="slotProps">
+                  <div v-if="slotProps.value && slotProps.value.value">
+                    <span
+                      :class="'task-status-badge type-' + slotProps.value.value"
+                      >{{ slotProps.value.label }}</span
+                    >
+                  </div>
+                  <div v-else-if="slotProps.value && !slotProps.value.value">
+                    <span
+                      :class="
+                        'task-status-badge type-' +
+                        slotProps.value.toLowerCase()
+                      "
+                      >{{ slotProps.value }}</span
+                    >
+                  </div>
+                  <span v-else>
+                    {{ slotProps.placeholder }}
+                  </span>
+                </template>
+              </Dropdown>
+            </div>
+          </div>
+
+          <div class="formgrid grid">
+            <div class="field col">
               <label for="task_chat_render">Chat Render</label>
               <Dropdown
                 id="tyle"
@@ -486,9 +524,7 @@
                 </template>
               </Dropdown>
             </div>
-          </div>
 
-          <div class="formgrid grid">
             <div class="field col">
               <label for="task_chat_move">Chat Move</label>
               <Dropdown
@@ -729,6 +765,10 @@ const createqueue = async () => {
     if (typeof taskChatMove === "object") {
       taskChatMove = queue.value.task_chat_move.value;
     }
+    let taskChatConvert = queue.value.task_chat_convert;
+    if (typeof taskChatConvert === "object") {
+      taskChatConvert = queue.value.task_chat_convert.value;
+    }
 
     // Editing queue
     await useApi(`/api/v1/queue/${queue.value.id}`, {
@@ -747,6 +787,7 @@ const createqueue = async () => {
         task_video_convert: taskVideoConvert,
         task_video_move: taskVideoMove,
         task_chat_download: taskChatDownload,
+        task_chat_convert: taskChatConvert,
         task_chat_render: taskChatRender,
         task_chat_move: taskChatRender,
       },
