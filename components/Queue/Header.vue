@@ -46,29 +46,12 @@
         <div class="w-flex w-flex-wrap">
           <div class="w-flex">
             <span
-              class="custom-marker shadow-2"
-              :class="props.queue.live_archive ? 'style-false' : 'style-true'"
-              ><i
-                v-if="props.queue.live_archive == true"
-                class="pi pi-check-circle"
-              ></i>
-              <i v-else class="pi pi-times-circle"></i
-            ></span>
-            <span class="w-ml-1">Live Archive</span>
+              v-if="props.queue.live_archive"
+              class="w-ml-1 w-bg-red-600 w-text-white w-p-2 w-rounded-lg"
+              >LIVE ARCHIVE</span
+            >
           </div>
           <div class="w-mt-2 break"></div>
-          <div class="w-flex">
-            <span
-              class="custom-marker shadow-2"
-              :class="props.queue.processing ? 'style-false' : 'style-true'"
-              ><i
-                v-if="props.queue.processing == true"
-                class="pi pi-check-circle"
-              ></i>
-              <i v-else class="pi pi-times-circle"></i
-            ></span>
-            <span class="w-ml-1">Processing</span>
-          </div>
         </div>
       </div>
     </div>
