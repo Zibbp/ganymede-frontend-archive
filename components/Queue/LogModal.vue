@@ -31,7 +31,7 @@
     </div>
     <!-- modal body -->
     <div class="w-p-3 w-h-96 log-window w-bg-black w-text-gray-200">
-      <span class="log-response"> {{ logResponse }}</span>
+      <span class="log-response" v-html="logResponse.value"> </span>
       <div id="bottomLogResponse"></div>
     </div>
     <div class="w-flex w-justify-end w-items-center w-100 w-border-t w-p-3">
