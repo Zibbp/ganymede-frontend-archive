@@ -60,7 +60,6 @@ const vodNotFound = ref(false);
 
 const qualityOptions = ref([
   { name: "Best", quality: "best" },
-  { name: "Source", quality: "source" },
   { name: "720p60", quality: "720p60" },
   { name: "480p30", quality: "480p30" },
   { name: "360p30", quality: "360p30" },

@@ -2,18 +2,33 @@
   <div>
     <DataTable :value="queueItems" responsiveLayout="scroll">
       <Column field="id" header="ID"></Column>
+      <Column field="edges.vod.ext_id" header="Ext ID"></Column>
       <Column header="On Hold">
-        <template #body="slotProps">{{
-          slotProps.data.on_hold ? "true" : "false"
-        }}</template>
+        <template #body="slotProps">
+          <i
+            v-if="slotProps.data.on_hold"
+            class="pi pi-check w-text-green-600"
+          ></i>
+          <i v-else class="pi pi-times w-text-red-600"></i>
+        </template>
       </Column>
       <Column header="Live Archive">
-        <template #body="slotProps">{{
-          slotProps.data.live_archive ? "true" : "false"
-        }}</template>
+        <template #body="slotProps">
+          <i
+            v-if="slotProps.data.live_archive"
+            class="pi pi-check w-text-green-600"
+          ></i>
+          <i v-else class="pi pi-times w-text-red-600"></i>
+        </template>
       </Column>
       <Column header="Processing">
-        <template #body="slotProps">{{ slotProps.data.processing }}</template>
+        <template #body="slotProps">
+          <i
+            v-if="slotProps.data.processing"
+            class="pi pi-check w-text-green-600"
+          ></i>
+          <i v-else class="pi pi-times w-text-red-600"></i>
+        </template>
       </Column>
 
       <Column header="Actions">
