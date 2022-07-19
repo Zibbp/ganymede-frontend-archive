@@ -84,6 +84,7 @@ const restartTask = async () => {
       body: {
         queue_id: props.queue.id,
         task: props.task,
+        cont: continueBool.value,
       },
       credentials: "include",
     });
