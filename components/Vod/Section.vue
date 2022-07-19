@@ -43,7 +43,13 @@
                 optionLabel="label"
                 placeholder="Per Page"
                 @change="onItemsPerPageChange($event)"
-              />
+              >
+                <template #value="slotProps">
+                  <span v-if="itemsPerPage !== 18">
+                    {{ itemsPerPage }}
+                  </span>
+                </template>
+              </Dropdown>
             </div>
           </div>
         </template>
@@ -116,8 +122,8 @@ const itemsPerPageOptions = ref([
   { label: "54", value: 54 },
 ]);
 const sortOptions = ref([
-  { label: "Date Newest to Oldest", value: "name" },
-  { label: "Date Oldest to Newest", value: "!name" },
+  { label: "Date Newest to Oldest", value: "!created_at" },
+  { label: "Date Oldest to Newest", value: "created_at" },
 ]);
 const onSortChange = (event) => {
   const value = event.value.value;
@@ -135,7 +141,6 @@ const onSortChange = (event) => {
 };
 const onItemsPerPageChange = (event) => {
   itemsPerPage.value = event.value.value;
-  console.log(event.value.value);
 };
 </script>
 
