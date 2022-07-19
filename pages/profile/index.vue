@@ -1,5 +1,5 @@
 <template>
-  <div>Your Profile :) {{ authStore.user.username }}</div>
+  <div><ProfileSection :user="authStore.user" /></div>
 </template>
 
 <script setup>
