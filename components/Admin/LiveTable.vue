@@ -342,6 +342,7 @@ const openNew = () => {
   live.value = {};
   live.value.new = true;
   live.value.archive_chat = true;
+  live.value.resolution = "best";
   submitted.value = false;
   liveDialog.value = true;
 };
