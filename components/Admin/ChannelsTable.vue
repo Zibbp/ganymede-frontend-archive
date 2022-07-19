@@ -446,7 +446,7 @@ const createTwitchChannel = async () => {
     toast.add({
       severity: "error",
       summary: "Error",
-      detail: "Error creating Twitch Channel",
+      detail: error.response._data.message,
       life: 3000,
     });
   }
