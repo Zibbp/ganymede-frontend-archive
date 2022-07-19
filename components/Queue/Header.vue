@@ -50,6 +50,11 @@
               class="w-ml-1 w-bg-red-600 w-text-white w-p-2 w-rounded-lg"
               >LIVE ARCHIVE</span
             >
+            <span
+              v-if="props.queue.on_hold"
+              class="w-ml-1 w-bg-blue-600 w-text-white w-p-2 w-rounded-lg"
+              >ON HOLD</span
+            >
           </div>
           <div class="w-mt-2 break"></div>
         </div>
