@@ -19,13 +19,14 @@
               :alt="props.vod.name"
             />
             <div
+              v-show="isImageLoaded"
               title="Streamed At"
               class="w-px-1 w-py-1 w-text-xs w-text-white vod-duration-badge w-rounded-sm"
             >
               {{ dayjs(props.vod.created_at).format("YYYY/MM/DD") }}
             </div>
             <div v-show="!isImageLoaded">
-              <!-- <Skeleton class="border-round-sm" width="100%" height="163px" /> -->
+              <Skeleton class="border-round-sm" width="100%" height="163px" />
             </div>
           </div>
           <div
@@ -55,15 +56,16 @@
             :alt="props.vod.name"
           />
           <div v-show="!isImageLoaded">
-            <!-- <Skeleton
-            v-show="!isImageLoaded"
-            class="border-round-sm"
-            width="100%"
-            height="163px"
-          /> -->
+            <Skeleton
+              v-show="!isImageLoaded"
+              class="border-round-sm"
+              width="100%"
+              height="163px"
+            />
           </div>
 
           <div
+            v-show="isImageLoaded"
             title="Streamed At"
             class="w-px-1 w-py-1 w-text-xs w-text-white vod-duration-badge w-rounded-sm"
           >
