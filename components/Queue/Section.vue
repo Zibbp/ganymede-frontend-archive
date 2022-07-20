@@ -1,5 +1,10 @@
 <template>
   <div>
+    <Button
+      @click="refreshQueue"
+      icon="pi pi-refresh"
+      class="p-button-rounded p-button-secondary p-button-text"
+    />
     <DataTable :value="queueItems" responsiveLayout="scroll">
       <Column field="id" header="ID"></Column>
       <Column field="edges.vod.ext_id" header="Ext ID"></Column>
@@ -51,7 +56,7 @@ import { useApi } from "~/composables/useApi";
 const router = useRouter();
 const config = useRuntimeConfig().public;
 
-const { data: queueItems } = await useAsyncData(`queue-items`, () =>
+const { data: queueItems, refresh } = await useAsyncData(`queue-items`, () =>
   useApi("/api/v1/queue", {
     method: "GET",
     params: {
@@ -60,6 +65,10 @@ const { data: queueItems } = await useAsyncData(`queue-items`, () =>
     credentials: "include",
   })
 );
+
+const refreshQueue = () => {
+  refresh();
+};
 </script>
 
 <style lang="scss" scoped></style>
