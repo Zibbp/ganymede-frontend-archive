@@ -735,7 +735,7 @@ const deleteVod = async () => {
     toast.add({
       severity: "error",
       summary: "Error",
-      detail: "Error deleting VOD",
+      detail: error.response._data.message,
       life: 3000,
     });
   }
