@@ -30,7 +30,11 @@
         </template>
       </Menubar>
       <template #end>
-        <InputText placeholder="Search" />
+        <InputText
+          placeholder="Search"
+          v-model="searchQuery"
+          v-on:keyup.enter="searchVods"
+        />
         <Button
           v-if="isDark"
           @click="toggleDark()"
@@ -71,12 +75,26 @@ const { $bus } = useNuxtApp();
 const isDark = useDark();
 const useToggleDark = useToggle(isDark);
 
+const searchQuery = ref();
+
 const toggleDark = () => {
   useToggleDark();
   $bus.$emit("toggleDark", isDark);
 };
 
 const authStore = useAuthStore();
+
+const searchVods = async () => {
+  if (searchQuery.value != "") {
+    await navigateTo({
+      path: "/search",
+      query: {
+        q: searchQuery.value,
+      },
+    });
+    searchQuery.value = "";
+  }
+};
 
 const items = ref([
   {
