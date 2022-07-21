@@ -105,7 +105,7 @@ const formmatedDuration = ref();
 onMounted(() => {
   formmatedDuration.value = dayjs
     .duration(props.vod.duration, "seconds")
-    .format("HH:mm");
+    .format("HH:mm:ss");
 });
 
 const isImageLoaded = ref(false);
