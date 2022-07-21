@@ -4,26 +4,25 @@
       <div class="vod-grid-item card">
         <div class="vod-grid-item-content">
           <div class="img-container">
-            <span
-              v-show="isImageLoaded"
-              title="Duration"
-              class="w-px-1 w-py-1 w-mt-3 w-ml-1 w-text-xs w-text-white vod-badge w-rounded-sm"
-            >
-              {{ formmatedDuration }}
-            </span>
-            <img
-              v-show="isImageLoaded"
-              @load="imageLoaded"
-              class="border-round-sm !w-inline"
-              :src="config.cdnURL + props.vod.web_thumbnail_path"
-              :alt="props.vod.name"
-            />
-            <div
-              v-show="isImageLoaded"
-              title="Streamed At"
-              class="w-px-1 w-py-1 w-text-xs w-text-white vod-duration-badge w-rounded-sm"
-            >
-              {{ dayjs(props.vod.streamed_at).format("YYYY/MM/DD") }}
+            <div v-show="isImageLoaded">
+              <span
+                title="Duration"
+                class="w-px-1 w-py-1 w-mt-3 w-ml-1 w-text-xs w-text-white vod-badge w-rounded-sm"
+              >
+                {{ formmatedDuration }}
+              </span>
+              <img
+                @load="imageLoaded"
+                class="border-round-sm !w-inline"
+                :src="config.cdnURL + props.vod.web_thumbnail_path"
+                :alt="props.vod.name"
+              />
+              <div
+                title="Streamed At"
+                class="w-px-1 w-py-1 w-text-xs w-text-white vod-duration-badge w-rounded-sm"
+              >
+                {{ dayjs(props.vod.streamed_at).format("YYYY/MM/DD") }}
+              </div>
             </div>
             <div v-show="!isImageLoaded">
               <Skeleton class="border-round-sm" width="100%" height="163px" />
@@ -41,20 +40,21 @@
     <div v-else class="vod-grid-item card">
       <div class="vod-grid-item-content">
         <div class="img-container">
-          <span
-            v-show="isImageLoaded"
-            title="Duration"
-            class="w-px-1 w-py-1 w-mt-3 w-ml-1 w-text-xs w-text-white vod-badge w-rounded-sm"
-          >
-            {{ formmatedDuration }}
-          </span>
-          <img
-            v-show="isImageLoaded"
-            @load="imageLoaded"
-            class="border-round-sm !w-inline"
-            :src="config.cdnURL + props.vod.web_thumbnail_path"
-            :alt="props.vod.name"
-          />
+          <div v-show="isImageLoaded">
+            <span
+              title="Duration"
+              class="w-px-1 w-py-1 w-mt-3 w-ml-1 w-text-xs w-text-white vod-badge w-rounded-sm"
+            >
+              {{ formmatedDuration }}
+            </span>
+            <img
+              v-show="isImageLoaded"
+              @load="imageLoaded"
+              class="border-round-sm !w-inline"
+              :src="config.cdnURL + props.vod.web_thumbnail_path"
+              :alt="props.vod.name"
+            />
+          </div>
           <div v-show="!isImageLoaded">
             <Skeleton
               v-show="!isImageLoaded"
@@ -133,8 +133,8 @@ const imageLoaded = () => {
 .overlay {
   position: absolute;
   bottom: 0;
-  background: rgb(148, 0, 211);
-  background: rgba(148, 0, 211, 0.5);
+  background: rgb(211, 0, 0);
+  background: rgba(211, 0, 0, 0.5);
   color: #f1f1f1;
   width: 100%;
   text-align: center;
