@@ -500,6 +500,7 @@ import { ref, onMounted } from "vue";
 import { FilterMatchMode } from "primevue/api";
 import { useToast } from "primevue/usetoast";
 import { v4 as uuidv4 } from "uuid";
+import { toRaw } from "vue";
 
 import { useApi } from "~/composables/useApi";
 import dayjs from "dayjs/esm";
@@ -577,15 +578,18 @@ const randExtId = () => {
 };
 
 watch(
-  () => [vod.value.ext_id],
+  () => [vod.value.ext_id, vod.value.channel_id],
   (cV, oV) => {
-    if (vod.new) {
-      vod.value.thumbnail_path = `/vods/${vod.value.ext_id}_${vod.value.id}/${vod.value.ext_id}-thumbnail.jpg`;
-      vod.value.web_thumbnail_path = `/vods/${vod.value.ext_id}_${vod.value.id}/${vod.value.ext_id}-web_thumbnail.jpg`;
-      vod.value.video_path = `/vods/${vod.value.ext_id}_${vod.value.id}/${vod.value.ext_id}-video.mp4`;
-      vod.value.chat_path = `/vods/${vod.value.ext_id}_${vod.value.id}/${vod.value.ext_id}-chat.json`;
-      vod.value.chat_video_path = `/vods/${vod.value.ext_id}_${vod.value.id}/${vod.value.ext_id}-chat.mp4`;
-      vod.value.info_path = `/vods/${vod.value.ext_id}_${vod.value.id}/${vod.value.ext_id}-info.json`;
+    if (vod.value.new && vod.value.channel_id) {
+      // Get selected channel for paths
+      const rawChannel = toRaw(vod.value.channel_id);
+
+      vod.value.thumbnail_path = `/vods/${rawChannel.name}/${vod.value.ext_id}_${vod.value.id}/${vod.value.ext_id}-thumbnail.jpg`;
+      vod.value.web_thumbnail_path = `/vods/${rawChannel.name}/${vod.value.ext_id}_${vod.value.id}/${vod.value.ext_id}-web_thumbnail.jpg`;
+      vod.value.video_path = `/vods/${rawChannel.name}/${vod.value.ext_id}_${vod.value.id}/${vod.value.ext_id}-video.mp4`;
+      vod.value.chat_path = `/vods/${rawChannel.name}/${vod.value.ext_id}_${vod.value.id}/${vod.value.ext_id}-chat.json`;
+      vod.value.chat_video_path = `/vods/${rawChannel.name}/${vod.value.ext_id}_${vod.value.id}/${vod.value.ext_id}-chat.mp4`;
+      vod.value.info_path = `/vods/${rawChannel.name}/${vod.value.ext_id}_${vod.value.id}/${vod.value.ext_id}-info.json`;
     }
   }
 );
