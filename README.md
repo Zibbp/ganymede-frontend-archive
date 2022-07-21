@@ -1,42 +1,13 @@
-# Nuxt 3 Minimal Starter
+<br />
+<div align="center">
+  <a>
+    <img src="https://raw.githubusercontent.com/Zibbp/ganymede/master/.github/ganymede-logo.png" alt="Logo" width="80" height="80">
+  </a>
 
-Look at the [nuxt 3 documentation](https://v3.nuxtjs.org) to learn more.
+  <h2 align="center">Ganymede</h2>
 
-## Setup
+</div>
 
-Make sure to install the dependencies:
 
-```bash
-# yarn
-yarn install
 
-# npm
-npm install
-
-# pnpm
-pnpm install --shamefully-hoist
-```
-
-## Development Server
-
-Start the development server on http://localhost:3000
-
-```bash
-npm run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-npm run build
-```
-
-Locally preview production build:
-
-```bash
-npm run preview
-```
-
-Checkout the [deployment documentation](https://v3.nuxtjs.org/guide/deploy/presets) for more information.
+Visit the main [Ganymede](https://github.com/Zibbp/ganymede) repository for more information.
