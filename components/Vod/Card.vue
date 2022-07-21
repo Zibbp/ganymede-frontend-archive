@@ -17,6 +17,11 @@
                 :src="config.cdnURL + props.vod.web_thumbnail_path"
                 :alt="props.vod.name"
               />
+              <ProgressBar
+                v-if="hasProgress"
+                :value="progressbarValue"
+                :showValue="false"
+              />
               <div
                 title="Streamed At"
                 class="w-px-1 w-py-1 w-text-xs w-text-white vod-duration-badge w-rounded-sm"
@@ -88,6 +93,9 @@
 import Skeleton from "primevue/skeleton";
 import dayjs from "dayjs/esm";
 import duration from "dayjs/esm/plugin/duration";
+import ProgressBar from "primevue/progressbar";
+
+import { toRaw } from "vue";
 
 const config = useRuntimeConfig().public;
 
@@ -98,14 +106,35 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  playback: {
+    type: Array,
+    required: false,
+  },
 });
 
 const formmatedDuration = ref();
+const hasProgress = ref(false);
+const progressbarValue = ref(0);
 
 onMounted(() => {
   formmatedDuration.value = dayjs
     .duration(props.vod.duration, "seconds")
     .format("HH:mm:ss");
+
+  // Playback progress
+  if (props.playback) {
+    const playbackEnts = toRaw(props.playback);
+    // Find the current vod in array of user's playback stats
+    const foundPlaybackEnt = playbackEnts.find(
+      (p) => p.vod_id === props.vod.id
+    );
+    if (foundPlaybackEnt) {
+      hasProgress.value = true;
+      // Calculate the percent of progress
+      const rawPercent = (foundPlaybackEnt.time / props.vod.duration) * 100;
+      progressbarValue.value = parseInt(rawPercent);
+    }
+  }
 });
 
 const isImageLoaded = ref(false);
@@ -138,5 +167,9 @@ const imageLoaded = () => {
   color: #f1f1f1;
   width: 100%;
   text-align: center;
+}
+.p-progressbar {
+  height: 0.25rem;
+  margin-top: -0.75rem;
 }
 </style>

@@ -9,7 +9,7 @@
             : 'w-col-span-12'
         "
       >
-        <VodVideoPlayer :vod="vod" />
+        <VodVideoPlayer :vod="vod" :progress="progress" />
       </div>
 
       <div
@@ -26,11 +26,31 @@
 </template>
 
 <script setup>
+import { useApi } from "~/composables/useApi";
 const route = useRoute();
 const config = useRuntimeConfig().public;
 
-const { data: vod } = await useAsyncData(`vod-${route.params.id}`, () =>
-  $fetch(`${config.apiURL}/api/v1/vod/${route.params.id}?with_channel=true`)
+const { data: vod } = await useAsyncData(
+  `vod-${route.params.id}`,
+  async () =>
+    await useApi(`/api/v1/vod/${route.params.id}?with_channel=true`, {
+      method: "GET",
+      credentials: "include",
+    })
+);
+
+const { data: progress } = await useAsyncData(
+  `progress-${route.params.id}`,
+  async () => {
+    try {
+      return await useApi(`/api/v1/playback/${route.params.id}`, {
+        method: "GET",
+        credentials: "include",
+      });
+    } catch (error) {
+      // No playback data found, do nothing.
+    }
+  }
 );
 </script>
 
