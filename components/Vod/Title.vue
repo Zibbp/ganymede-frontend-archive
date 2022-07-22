@@ -97,10 +97,10 @@ onMounted(() => {
 const menu = ref();
 const items = ref([
   {
-    label: "Mark as Played",
+    label: "Mark as Watched",
   },
   {
-    label: "Mark as Unplayed",
+    label: "Mark as Unwatched",
   },
 ]);
 
@@ -122,16 +122,16 @@ const menuToggleExec = (event) => {
         });
         toast.add({
           severity: "success",
-          summary: "Marked as Played",
+          summary: "Marked as Watched",
           life: 3000,
         });
       } catch (error) {
         toast.add({
           severity: "error",
-          summary: "Error marking as Played",
+          summary: "Error marking as Watched",
           life: 3000,
         });
-        console.error("Error marking as played");
+        console.error("Error marking as Watched");
         console.error(error);
       }
       break;
@@ -143,16 +143,16 @@ const menuToggleExec = (event) => {
         });
         toast.add({
           severity: "success",
-          summary: "Marked as Unplayed",
+          summary: "Marked as Unwatched",
           life: 3000,
         });
       } catch (error) {
         toast.add({
           severity: "error",
-          summary: "Error marking as Unplayed",
+          summary: "Error marking as Unwatched",
           life: 3000,
         });
-        console.error("Error marking as unplayed");
+        console.error("Error marking as Unwatched");
         console.error(error);
       }
       break;
