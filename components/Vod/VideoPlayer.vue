@@ -109,7 +109,6 @@ onMounted(async () => {
     if (props.progress) {
       // timeout of player init
       setTimeout(() => {
-        console.log(props.progress.time);
         vodVideoPlayer.currentTime = props.progress.time;
         // emit to chat player
         $bus.$emit("vod-player-seek", props.progress.time);
