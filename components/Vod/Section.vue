@@ -9,6 +9,7 @@
         :rows="itemsPerPage"
         :sortOrder="sortOrder"
         :sortField="sortField"
+        :dataKey="props.vods.id"
       >
         <template #empty>
           <div class="w-flex w-items-center w-justify-center w-w-full w-h-full">
@@ -55,7 +56,11 @@
         </template>
 
         <template #grid="slotProps">
-          <VodCard :vod="slotProps.data" :playback="playback"></VodCard>
+          <VodCard
+            :key="slotProps.data.id"
+            :vod="slotProps.data"
+            :playback="playback"
+          ></VodCard>
         </template>
       </DataView>
     </div>
