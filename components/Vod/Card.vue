@@ -17,6 +17,11 @@
                 :src="config.cdnURL + props.vod.web_thumbnail_path"
                 :alt="props.vod.name"
               />
+              <i
+                v-if="statusIsFinished"
+                title="Marked as Played"
+                class="pi pi-check w-absolute vod-marked-finished"
+              ></i>
               <ProgressBar
                 v-if="hasProgress"
                 :value="progressbarValue"
@@ -115,6 +120,7 @@ const props = defineProps({
 const formmatedDuration = ref();
 const hasProgress = ref(false);
 const progressbarValue = ref(0);
+const statusIsFinished = ref(false);
 
 onMounted(() => {
   formmatedDuration.value = dayjs
@@ -130,6 +136,12 @@ onMounted(() => {
     );
     if (foundPlaybackEnt) {
       hasProgress.value = true;
+      // Check if VOD is finished
+      if (foundPlaybackEnt.status == "finished") {
+        statusIsFinished.value = true;
+        hasProgress.value = false;
+        return;
+      }
       // Calculate the percent of progress
       const rawPercent = (foundPlaybackEnt.time / props.vod.duration) * 100;
       progressbarValue.value = parseInt(rawPercent);
@@ -171,5 +183,15 @@ const imageLoaded = () => {
 .p-progressbar {
   height: 0.25rem;
   margin-top: -0.75rem;
+}
+.vod-marked-finished {
+  top: 0;
+  right: 0;
+  margin-top: 0.75rem;
+  margin-right: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 6px;
+  color: white;
+  background-color: #22c55e;
 }
 </style>
