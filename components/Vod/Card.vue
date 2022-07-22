@@ -183,6 +183,7 @@ const imageLoaded = () => {
 .p-progressbar {
   height: 0.25rem;
   margin-top: -0.75rem;
+  margin-bottom: 0.5rem;
 }
 .vod-marked-finished {
   top: 0;
