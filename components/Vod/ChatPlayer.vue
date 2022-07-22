@@ -16,8 +16,9 @@ const props = defineProps({
 });
 
 const playerOptions = {
-  controls: ["play-large", "play", "progress"],
+  controls: ["progress"],
   autoplay: false,
+  clickToPlay: false,
 };
 
 const playerSources = {

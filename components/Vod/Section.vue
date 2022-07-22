@@ -55,7 +55,7 @@
         </template>
 
         <template #grid="slotProps">
-          <VodCard :vod="slotProps.data"></VodCard>
+          <VodCard :vod="slotProps.data" :playback="playback"></VodCard>
         </template>
       </DataView>
     </div>
@@ -75,6 +75,10 @@ const props = defineProps({
   vods: {
     type: Array,
     required: true,
+  },
+  playback: {
+    type: Array,
+    required: false,
   },
 });
 

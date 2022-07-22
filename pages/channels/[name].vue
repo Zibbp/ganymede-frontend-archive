@@ -4,7 +4,7 @@
     <div class="w-container w-mx-auto">
       <div v-if="pending">Loading Vods...</div>
       <div v-else>
-        <VodSection :vods="vods"></VodSection>
+        <VodSection :vods="vods" :playback="playback"></VodSection>
       </div>
     </div>
   </div>
@@ -55,6 +55,26 @@ const {
     });
   }
 });
+
+const { data: playback } = await useLazyAsyncData(
+  `playback-${channel.id}`,
+  () => {
+    try {
+      return useApi(`/api/v1/playback`, {
+        method: "GET",
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("Error fetching playback: ", error);
+      toast.add({
+        severity: "error",
+        summary: "Error fetching playback",
+        detail: error.response.data.message,
+        life: 3000,
+      });
+    }
+  }
+);
 </script>
 
 <style lang="scss" scoped></style>

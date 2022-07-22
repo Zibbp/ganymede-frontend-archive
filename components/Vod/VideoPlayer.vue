@@ -20,6 +20,10 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  progress: {
+    type: Object,
+    required: false,
+  },
 });
 
 const playerOptions = {
@@ -53,6 +57,8 @@ const playerSources = {
   poster: "",
   tracks: [],
 };
+
+const timer = ref();
 
 onMounted(async () => {
   const Plyr = await import("plyr");
@@ -98,7 +104,63 @@ onMounted(async () => {
       );
       $bus.$emit("vod-player-ratechange", vodVideoPlayer.speed);
     });
+
+    // Set progress if it exists
+    if (props.progress) {
+      // timeout of player init
+      setTimeout(() => {
+        console.log(props.progress.time);
+        vodVideoPlayer.currentTime = props.progress.time;
+        // emit to chat player
+        $bus.$emit("vod-player-seek", props.progress.time);
+      }, 250);
+    }
+
+    // Playback progress API
+    timer.value = window.setInterval(() => {
+      // Update video playback progress
+      // every 30 seconds
+      // only when playing
+      if (vodVideoPlayer.playing) {
+        try {
+          const currentTime = parseInt(vodVideoPlayer.currentTime);
+          useApi(`/api/v1/playback/progress`, {
+            method: "POST",
+            body: {
+              vod_id: props.vod.id,
+              time: currentTime,
+            },
+            credentials: "include",
+          });
+        } catch (error) {
+          console.error("Error sending playback progress:", error);
+        }
+        // Check if over 90% complete - set to complete if so
+        const rawPercent =
+          (vodVideoPlayer.currentTime / vodVideoPlayer.duration) * 100;
+        const percent = parseInt(rawPercent);
+        if (percent >= 90) {
+          try {
+            useApi(`/api/v1/playback/status`, {
+              method: "POST",
+              body: {
+                vod_id: props.vod.id,
+                status: "finished",
+              },
+              credentials: "include",
+            });
+          } catch (error) {
+            console.error("Error updating playback status");
+            console.error(error);
+          }
+        }
+      }
+    }, 20000);
   }, 50);
+});
+
+onUnmounted(() => {
+  clearInterval(timer.value);
 });
 </script>
 
