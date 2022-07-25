@@ -71,7 +71,7 @@ const props = defineProps({
 const { data: logResp, refresh } = await useAsyncData(
   `queue-${props.queue.id}-log-${props.type}`,
   () =>
-    useApi(`/api/v1/queue/${props.queue.id}/log`, {
+    useApi(`/api/v1/queue/${props.queue.id}/tail`, {
       method: "GET",
       params: {
         type: props.type,
@@ -93,24 +93,6 @@ onMounted(async () => {
     scrollToElement();
   }, 1000);
 });
-
-const fetchLog = async () => {
-  try {
-    const data = await $fetch(
-      `${config.apiURL}/api/v1/queue/${props.queue.id}/log?type=${props.type}`
-    );
-    logResponse.value = data;
-    scrollToElement();
-  } catch (error) {
-    console.error("Error fetching log:", error);
-    toast.add({
-      severity: "error",
-      summary: "Error",
-      detail: "Error fetching log file, please check console for more info.",
-      life: 3000,
-    });
-  }
-};
 
 const closeModal = () => {
   clearInterval(timer.value);
