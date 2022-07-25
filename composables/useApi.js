@@ -1,7 +1,7 @@
 import { useAuthStore } from "~/stores/AuthStore";
 import { $fetch } from "ohmyfetch"
 
-export const useApi = async (endpoint, config) => {
+export const useApi = async (endpoint, config, allowFail) => {
     const { apiURL } = useRuntimeConfig()
     const router = useRouter();
     const authStore = useAuthStore();
@@ -27,6 +27,9 @@ export const useApi = async (endpoint, config) => {
                     ...config,
                 })
             } catch (error) {
+                if (allowFail) {
+                    return Promise.reject(error)
+                }
                 // Failed to refresh log out user
                 console.error("[Use API] Error refreshing token", error)
                 authStore.user = {};

@@ -27,7 +27,6 @@ let channel;
 try {
   channel = await useApi(`/api/v1/channel/name/${route.params.name}`, {
     method: "GET",
-    credentials: "include",
   });
 } catch (error) {
   console.error("Error fetching channel: ", error);
@@ -51,7 +50,6 @@ const {
   try {
     return useApi(`/api/v1/vod?channel_id=${channel.id}`, {
       method: "GET",
-      credentials: "include",
     });
   } catch (error) {
     console.error("Error fetching vods: ", error);
@@ -68,18 +66,19 @@ const { data: playback } = await useLazyAsyncData(
   `playback-${channel.id}`,
   () => {
     try {
-      return useApi(`/api/v1/playback`, {
-        method: "GET",
-        credentials: "include",
-      });
+      return useApi(
+        `/api/v1/playback`,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+        true
+      );
     } catch (error) {
-      console.error("Error fetching playback: ", error);
-      toast.add({
-        severity: "error",
-        summary: "Error fetching playback",
-        detail: error.response.data.message,
-        life: 3000,
-      });
+      console.debug(
+        "Error fetching progress data, no playback data probably exists."
+      );
+      console.debug(error);
     }
   }
 );

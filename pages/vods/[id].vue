@@ -35,7 +35,6 @@ const { data: vod } = await useAsyncData(
   async () =>
     await useApi(`/api/v1/vod/${route.params.id}?with_channel=true`, {
       method: "GET",
-      credentials: "include",
     })
 );
 
@@ -47,12 +46,20 @@ const { data: progress } = await useAsyncData(
   `progress-${route.params.id}`,
   async () => {
     try {
-      return await useApi(`/api/v1/playback/${route.params.id}`, {
-        method: "GET",
-        credentials: "include",
-      });
+      return await useApi(
+        `/api/v1/playback/${route.params.id}`,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+        true
+      );
     } catch (error) {
       // No playback data found, do nothing.
+      console.debug(
+        "Error fetching progress data, no playback data probably exists."
+      );
+      console.debug(error);
     }
   }
 );
