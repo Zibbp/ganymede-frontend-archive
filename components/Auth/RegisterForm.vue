@@ -6,13 +6,11 @@
         alt="Image"
         class="w-w-12 w-mx-auto"
       />
-      <div class="text-900 text-3xl font-medium mb-3">Welcome Back</div>
-      <span class="text-600 font-medium line-height-3"
-        >Don't have an account?</span
-      >
-      <NuxtLink to="/register"
+      <div class="text-900 text-3xl font-medium mb-3">Create An Account</div>
+      <span class="text-600 font-medium line-height-3">Have an account?</span>
+      <NuxtLink to="/login"
         ><a class="font-medium no-underline ml-2 text-blue-500 cursor-pointer"
-          >Create today!</a
+          >Login</a
         ></NuxtLink
       >
     </div>
@@ -43,7 +41,7 @@
         />
 
         <Button
-          label="Sign In"
+          label="Sign Up"
           icon="pi pi-user"
           type="submit"
           class="w-full"
@@ -68,30 +66,27 @@ const password = ref("");
 
 const login = () => {
   authStore
-    .login(username.value, password.value)
+    .register(username.value, password.value)
     .then(() => {
-      navigateTo({ path: "/" });
+      toast.add({
+        severity: "success",
+        summary: "Success",
+        detail: "You have successfully registered, you may now sign in.",
+        life: 3000,
+      });
+      router.push("/login");
     })
-    .catch((error) => {
+    .catch((err) => {
+      console.error("Error signing up");
+      console.error(err);
       toast.add({
         severity: "error",
         summary: "Error",
-        detail: error.response.data.message,
+        detail: err.response.data.message,
         life: 3000,
       });
-      console.error("Error logging in: " + error);
     });
 };
 </script>
 
-<style lang="scss" scoped>
-// [type="text"] {
-//   background-color: none;
-//   border-color: none;
-//   border-radius: 0;
-//   border-width: 0;
-//   font-size: 0;
-//   line-height: 0;
-//   padding: 0;
-// }
-</style>
+<style lang="scss" scoped></style>

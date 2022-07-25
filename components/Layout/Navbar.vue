@@ -59,6 +59,9 @@
           <NuxtLink to="/login" class="w-ml-2">
             <Button label="Login" class="p-button-help" />
           </NuxtLink>
+          <NuxtLink to="/register" class="w-ml-2">
+            <Button label="Register" class="p-button-outlined" />
+          </NuxtLink>
         </span>
       </template>
     </Menubar>
