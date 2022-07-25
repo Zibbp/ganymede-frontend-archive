@@ -7,6 +7,10 @@
 <script setup>
 import { useAuthGuard, useRoleGuard } from "~/composables/useGuard";
 
+useHead({
+  title: "Admin - VODs",
+});
+
 onMounted(() => {
   useAuthGuard();
   useRoleGuard("admin");

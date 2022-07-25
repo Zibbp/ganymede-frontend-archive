@@ -31,6 +31,10 @@ import { useApi } from "~/composables/useApi";
 
 const route = useRoute();
 
+useHead({
+  title: "Search - Ganymede",
+});
+
 const searchComplete = ref(false);
 const searchText = ref();
 const vods = ref();

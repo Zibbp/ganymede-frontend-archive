@@ -39,6 +39,10 @@ const { data: vod } = await useAsyncData(
     })
 );
 
+useHead({
+  title: `${vod.value.title}`,
+});
+
 const { data: progress } = await useAsyncData(
   `progress-${route.params.id}`,
   async () => {

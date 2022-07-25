@@ -6,6 +6,10 @@
 import { useAuthStore } from "~/stores/AuthStore";
 import { useAuthGuard } from "~/composables/useGuard";
 
+useHead({
+  title: "Profile - Ganymede",
+});
+
 onMounted(() => {
   useAuthGuard();
 });

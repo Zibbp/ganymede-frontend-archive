@@ -7,6 +7,10 @@
 <script setup>
 import { useAuthGuard, useRoleGuard } from "~/composables/useGuard";
 
+useHead({
+  title: "Queue - Ganymede",
+});
+
 onMounted(() => {
   useAuthGuard();
   useRoleGuard("archiver");

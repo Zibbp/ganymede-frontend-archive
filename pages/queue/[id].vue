@@ -60,6 +60,10 @@ const config = useRuntimeConfig().public;
 const { $bus } = useNuxtApp();
 const toast = useToast();
 
+useHead({
+  title: `Queue`,
+});
+
 onMounted(() => {
   useAuthGuard();
   useRoleGuard("archiver");
@@ -79,6 +83,10 @@ const { data: queue, refresh } = await useAsyncData(
       credentials: "include",
     })
 );
+
+useHead({
+  title: `Queue ${queue.value.id}`,
+});
 
 const intervalId = ref();
 const vodTimelineReload = ref(0);

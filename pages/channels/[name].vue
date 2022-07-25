@@ -18,6 +18,10 @@ const toast = useToast();
 const route = useRoute();
 const config = useRuntimeConfig().public;
 
+useHead({
+  title: `${route.params.name}`,
+});
+
 let channel;
 
 try {
@@ -34,6 +38,10 @@ try {
     life: 3000,
   });
 }
+
+useHead({
+  title: `${channel.display_name} - Ganymede`,
+});
 
 const {
   data: vods,

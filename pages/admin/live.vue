@@ -4,6 +4,10 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+useHead({
+  title: "Admin - Live",
+});
+</script>
 
 <style lang="scss" scoped></style>

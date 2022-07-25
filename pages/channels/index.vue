@@ -4,6 +4,10 @@
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+useHead({
+  title: "Channels - Ganymede",
+});
+</script>
 
 <style lang="scss" scoped></style>
