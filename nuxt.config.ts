@@ -30,19 +30,9 @@ export default defineNuxtConfig({
         'nuxt-windicss',
         '@pinia/nuxt',
         "@nuxtjs-alt/axios",
-        '@kevinmarrec/nuxt-pwa',
     ],
     windicss: {
         analyze: true
-    },
-    pwa: {
-        meta: {
-            // Generate splash screens for iOS
-            mobileAppIOS: true
-        },
-        workbox: {
-            enabled: true
-        }
     },
     axios: {
         credentials: true,

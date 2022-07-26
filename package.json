@@ -7,7 +7,6 @@
     "preview": "nuxt preview"
   },
   "devDependencies": {
-    "@kevinmarrec/nuxt-pwa": "^0.4.2",
     "@vueuse/core": "^8.7.5",
     "@vueuse/nuxt": "^8.7.5",
     "nuxt": "^3.0.0-rc.5",
