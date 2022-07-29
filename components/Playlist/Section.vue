@@ -75,7 +75,6 @@ onMounted(() => {
       editorOrAdmin.value = true;
     }
   }
-  console.log(editorOrAdmin.value);
 });
 
 const hideDialog = () => {
@@ -83,7 +82,7 @@ const hideDialog = () => {
 };
 
 const createPlaylist = async () => {
-  if (playlist.value.name && playlist.value.description) {
+  if (playlist.value.name) {
     try {
       await useApi(`/api/v1/playlist`, {
         method: "POST",
