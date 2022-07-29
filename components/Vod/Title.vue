@@ -37,7 +37,7 @@
             icon="pi pi-calendar"
           />
         </div>
-        <div>
+        <div v-if="authStore.isAuthenticated">
           <Button
             type="button"
             icon="pi pi-ellipsis-v"
@@ -114,11 +114,13 @@ import duration from "dayjs/esm/plugin/duration";
 import TieredMenu from "primevue/tieredmenu";
 import Dialog from "primevue/dialog";
 import Dropdown from "primevue/dropdown";
+import { useAuthStore } from "~/stores/AuthStore";
 
 import { useApi } from "~/composables/useApi";
 import { useToast } from "primevue/usetoast";
 
 const toast = useToast();
+const authStore = useAuthStore();
 
 const props = defineProps({
   vod: {
