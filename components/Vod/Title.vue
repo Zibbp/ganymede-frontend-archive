@@ -176,7 +176,7 @@ const fetchVodPlaylists = async () => {
 
 const menuToggleExec = async (event) => {
   switch (event.target.innerHTML) {
-    case "Mark as Played":
+    case "Mark as Watched":
       try {
         useApi(`/api/v1/playback/status`, {
           method: "POST",
@@ -201,7 +201,7 @@ const menuToggleExec = async (event) => {
         console.error(error);
       }
       break;
-    case "Mark as Unplayed":
+    case "Mark as Unwatched":
       try {
         useApi(`/api/v1/playback/${props.vod.id}`, {
           method: "DELETE",
