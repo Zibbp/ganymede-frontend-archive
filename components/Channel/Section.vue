@@ -72,10 +72,13 @@ import DataViewLayoutOptions from "primevue/dataviewlayoutoptions";
 import Dropdown from "primevue/dropdown";
 import Rating from "primevue/rating";
 import Button from "primevue/button";
+import { useApi } from "~/composables/useApi";
 const config = useRuntimeConfig().public;
 
 const { data: channels, refresh } = await useAsyncData(`channels`, () =>
-  $fetch(`${config.apiURL}/api/v1/channel`)
+  useApi(`/api/v1/channel`, {
+    method: "GET",
+  })
 );
 
 // console.log(channels);
