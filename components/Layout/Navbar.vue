@@ -109,6 +109,10 @@ const items = ref([
     to: "/channels",
   },
   {
+    label: "Playlists",
+    to: "/playlists",
+  },
+  {
     label: "Archive",
     to: "/archive",
     visible: () => {
