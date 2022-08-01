@@ -92,6 +92,10 @@ const route = useRoute();
 const config = useRuntimeConfig().public;
 const authStore = useAuthStore();
 
+useHead({
+  title: "Playlist - Ganymede",
+});
+
 const { data: playlist, refresh } = await useAsyncData(
   `playlist-${route.params.id}`,
   async () => {
@@ -111,6 +115,10 @@ const { data: playlist, refresh } = await useAsyncData(
     }
   }
 );
+
+useHead({
+  title: `${playlist.value.name} - Playlist`,
+});
 
 const editorOrAdmin = ref(false);
 const editPlaylistDialog = ref(false);
