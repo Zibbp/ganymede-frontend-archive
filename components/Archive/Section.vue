@@ -94,7 +94,7 @@ const archiveVod = async () => {
     toast.add({
       severity: "error",
       summary: "Error Archiving Vod",
-      detail: `${error._data.message}`,
+      detail: `${error.response._data.message}`,
       life: 3000,
     });
   }
