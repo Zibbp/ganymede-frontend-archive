@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="w-container w-mx-auto">
-      <SearchSection :vods="playlist.edges.vods" />
+      <SearchSection :vods="playlist.edges.vods" :playback="playback" />
     </div>
     <!-- Edit Playlist Dialog -->
     <Dialog
@@ -112,6 +112,27 @@ const { data: playlist, refresh } = await useAsyncData(
         life: 3000,
       });
       navigateTo(`/playlists`);
+    }
+  }
+);
+
+const { data: playback } = await useLazyAsyncData(
+  `playlist-playback-${route.params.id}`,
+  () => {
+    try {
+      return useApi(
+        `/api/v1/playback`,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+        true
+      );
+    } catch (error) {
+      console.debug(
+        "Error fetching progress data, no playback data probably exists."
+      );
+      console.debug(error);
     }
   }
 );
