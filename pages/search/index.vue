@@ -20,7 +20,11 @@
       </div>
     </div>
     <div>
-      <SearchSection v-if="searchComplete" :vods="vods"></SearchSection>
+      <SearchSection
+        v-if="searchComplete"
+        :vods="vods"
+        :playback="playbackResp"
+      ></SearchSection>
     </div>
   </div>
 </template>
@@ -38,6 +42,7 @@ useHead({
 const searchComplete = ref(false);
 const searchText = ref();
 const vods = ref();
+const playbackResp = ref();
 
 onMounted(() => {
   if (route.query.q) {
@@ -58,6 +63,30 @@ const searchVods = async () => {
       }
     );
     vods.value = vodsSearch;
+
+    // Playback progress
+    const { data: playback } = await useLazyAsyncData(
+      `search-playback-${searchText.value}`,
+      () => {
+        try {
+          return useApi(
+            `/api/v1/playback`,
+            {
+              method: "GET",
+              credentials: "include",
+            },
+            true
+          );
+        } catch (error) {
+          console.debug(
+            "Error fetching progress data, no playback data probably exists."
+          );
+          console.debug(error);
+        }
+      }
+    );
+    playbackResp.value = playback.value;
+
     searchComplete.value = true;
   } catch (error) {
     console.error("Error searching vods: " + error);
