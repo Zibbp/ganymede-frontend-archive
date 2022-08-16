@@ -1,8 +1,18 @@
 <template>
   <div class="w-bg-lara-100 dark:w-bg-lara-900 body-class">
     <Head>
-      <link v-if="!isDark" rel="stylesheet" href="/theme/lara-light-purple" />
-      <link v-else rel="stylesheet" href="/theme/lara-dark-purple" />
+      <link
+        v-if="!isDark"
+        rel="stylesheet"
+        type="text/css"
+        href="/theme/lara-light-purple"
+      />
+      <link
+        v-else
+        rel="stylesheet"
+        type="text/css"
+        href="/theme/lara-dark-purple"
+      />
     </Head>
     <NuxtLayout><NuxtPage /></NuxtLayout>
   </div>
