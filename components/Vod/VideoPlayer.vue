@@ -112,7 +112,7 @@ onMounted(async () => {
         vodVideoPlayer.currentTime = props.progress.time;
         // emit to chat player
         $bus.$emit("vod-player-seek", props.progress.time);
-      }, 250);
+      }, 500);
     }
 
     // Playback progress API
