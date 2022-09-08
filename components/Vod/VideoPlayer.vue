@@ -12,8 +12,11 @@
 </template>
 
 <script setup>
+import { useAuthStore } from "~/stores/AuthStore";
 const config = useRuntimeConfig().public;
 const { $bus } = useNuxtApp();
+
+const authStore = useAuthStore();
 
 const props = defineProps({
   vod: {
@@ -120,7 +123,7 @@ onMounted(async () => {
       // Update video playback progress
       // every 30 seconds
       // only when playing
-      if (vodVideoPlayer.playing) {
+      if (vodVideoPlayer.playing && authStore.isAuthenticated) {
         try {
           const currentTime = parseInt(vodVideoPlayer.currentTime);
           useApi(`/api/v1/playback/progress`, {
@@ -130,7 +133,7 @@ onMounted(async () => {
               time: currentTime,
             },
             credentials: "include",
-          });
+          }, true);
         } catch (error) {
           console.error("Error sending playback progress:", error);
         }
@@ -147,7 +150,7 @@ onMounted(async () => {
                 status: "finished",
               },
               credentials: "include",
-            });
+            }, true);
           } catch (error) {
             console.error("Error updating playback status");
             console.error(error);
