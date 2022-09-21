@@ -21,7 +21,10 @@
               class="mr-3 p-button-raised"
             ></Button
           ></NuxtLink>
-          <NuxtLink v-if="authStore.isAuthenticated" to="/archive">
+          <NuxtLink
+            v-if="isPermissions()"
+            to="/archive"
+          >
             <Button
               label="Archive"
               type="button"
@@ -52,6 +55,18 @@
 <script setup>
 import { useAuthStore } from "~/stores/AuthStore";
 const authStore = useAuthStore();
+
+const isPermissions = () => {
+  let visibleBoolean;
+  if (authStore.isAuthenticated) {
+    if (authStore.user.role === "archiver" || authStore.user.role === "editor" || authStore.user.role === "admin") {
+      visibleBoolean = true;
+    } 
+  } else {
+    visibleBoolean = false;
+  }
+  return visibleBoolean;
+};
 </script>
 
 <style lang="scss" scoped></style>
