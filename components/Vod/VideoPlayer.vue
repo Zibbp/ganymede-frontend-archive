@@ -112,7 +112,7 @@ onMounted(async () => {
     // Set player progress if exists
     // Hacky way of setting - Plyr does not play well with nuxt3
       let setProgress = 1;
-      vodVideoPlayer.on("canplay", (event) => {
+      vodVideoPlayer.on("loadeddata", (event) => {
         if (props.progress) {
         if (setProgress < 5) {
           vodVideoPlayer.currentTime = props.progress.time;
