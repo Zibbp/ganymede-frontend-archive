@@ -108,15 +108,19 @@ onMounted(async () => {
       $bus.$emit("vod-player-ratechange", vodVideoPlayer.speed);
     });
 
-    // Set progress if it exists
-    if (props.progress) {
-      // timeout of player init
-      setTimeout(() => {
-        vodVideoPlayer.currentTime = props.progress.time;
-        // emit to chat player
-        $bus.$emit("vod-player-seek", props.progress.time);
-      }, 500);
-    }
+   
+    // Set player progress if exists
+    // Hacky way of setting - Plyr does not play well with nuxt3
+      let setProgress = 1;
+      vodVideoPlayer.on("canplay", (event) => {
+        if (props.progress) {
+        if (setProgress < 5) {
+          vodVideoPlayer.currentTime = props.progress.time;
+          // emit to chat player
+          $bus.$emit("vod-player-seek", props.progress.time);
+          setProgress = setProgress + 1;
+          }  }
+      })
 
     // Playback progress API
     timer.value = window.setInterval(() => {
@@ -126,14 +130,18 @@ onMounted(async () => {
       if (vodVideoPlayer.playing && authStore.isAuthenticated) {
         try {
           const currentTime = parseInt(vodVideoPlayer.currentTime);
-          useApi(`/api/v1/playback/progress`, {
-            method: "POST",
-            body: {
-              vod_id: props.vod.id,
-              time: currentTime,
+          useApi(
+            `/api/v1/playback/progress`,
+            {
+              method: "POST",
+              body: {
+                vod_id: props.vod.id,
+                time: currentTime,
+              },
+              credentials: "include",
             },
-            credentials: "include",
-          }, true);
+            true
+          );
         } catch (error) {
           console.error("Error sending playback progress:", error);
         }
@@ -143,14 +151,18 @@ onMounted(async () => {
         const percent = parseInt(rawPercent);
         if (percent >= 90) {
           try {
-            useApi(`/api/v1/playback/status`, {
-              method: "POST",
-              body: {
-                vod_id: props.vod.id,
-                status: "finished",
+            useApi(
+              `/api/v1/playback/status`,
+              {
+                method: "POST",
+                body: {
+                  vod_id: props.vod.id,
+                  status: "finished",
+                },
+                credentials: "include",
               },
-              credentials: "include",
-            }, true);
+              true
+            );
           } catch (error) {
             console.error("Error updating playback status");
             console.error(error);
