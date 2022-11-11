@@ -82,6 +82,21 @@
               </template>
             </Column>
 
+            <Column field="method" header="Method" :sortable="true">
+              <template #body="slotProps">
+                <span :title="slotProps.data.oauth" class="w-line-clamp-1">
+                  <span
+                    v-if="slotProps.data.oauth"
+                    :class="'user-auth-method-badge method-oauth'"
+                    >OAUTH</span
+                  >
+                  <span v-else :class="'user-auth-method-badge method-local'"
+                    >LOCAL</span
+                  >
+                </span>
+              </template>
+            </Column>
+
             <Column field="created_at" header="Created At" :sortable="true">
               <template #body="slotProps">
                 <span>{{
@@ -429,6 +444,25 @@ const deleteSelectedusers = async () => {
 </script>
 
 <style lang="scss" scoped>
+.user-auth-method-badge {
+  border-radius: 2px;
+  padding: 0.25em 0.5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+}
+
+.method-oauth {
+  background-color: #eccfff;
+  color: #694382;
+}
+
+.method-local {
+  background-color: #b3e5fc;
+  color: #23547b;
+}
+
 .user-role-badge {
   border-radius: 2px;
   padding: 0.25em 0.5rem;
