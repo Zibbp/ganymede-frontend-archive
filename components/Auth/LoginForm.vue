@@ -50,6 +50,15 @@
         ></Button>
       </div>
     </form>
+    <div class="w-mt-4">
+      <NuxtLink :to="config.apiURL + '/api/v1/auth/oauth/login'">
+        <Button
+          label="Login via SSO"
+          icon="pi pi-lock"
+          class="w-full p-button p-button-success"
+        ></Button>
+      </NuxtLink>
+    </div>
   </div>
 </template>
 
@@ -58,6 +67,8 @@ import Button from "primevue/button";
 import { useToast } from "primevue/usetoast";
 
 import { useAuthStore } from "~/stores/AuthStore";
+
+const config = useRuntimeConfig().public;
 
 const router = useRouter();
 const authStore = useAuthStore();

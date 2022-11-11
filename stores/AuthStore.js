@@ -10,6 +10,7 @@ export const useAuthStore = defineStore('AuthStore', {
         return {
             apiURL,
             user: null,
+            oauth: false,
             isAuthenticated: false
         }
     },
