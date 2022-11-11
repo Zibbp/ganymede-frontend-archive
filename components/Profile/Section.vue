@@ -10,7 +10,8 @@
         <Tag class="w-mt-2" :value="user.role"></Tag>
       </div>
       <div>
-        <ProfileChangePassword />
+        <div v-if="!authStore.oauth"><ProfileChangePassword /></div>
+        <div v-else>Account managed via OAuth</div>
       </div>
       <div class="w-mt-4">
         <Button
