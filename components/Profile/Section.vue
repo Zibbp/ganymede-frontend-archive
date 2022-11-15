@@ -31,6 +31,8 @@ import { useAuthStore } from "~/stores/AuthStore";
 
 const authStore = useAuthStore();
 
+const config = useRuntimeConfig().public;
+
 const props = defineProps({
   user: {
     type: Object,
@@ -39,7 +41,11 @@ const props = defineProps({
 });
 
 const logout = () => {
-  authStore.logout();
+  if (authStore.oauth) {
+    window.location.href = `${config.apiURL}/api/v1/auth/oauth/logout`;
+  } else {
+    authStore.logout();
+  }
 };
 </script>
 
