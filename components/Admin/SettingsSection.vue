@@ -3,7 +3,7 @@
     <div v-if="pending">Loading...</div>
     <div
       v-else
-      class="w-w-1/3 w-mt-4 w-bg-lara-200 w-p-4 w-rounded-lg dark:w-bg-lara-800 dark:w-text-light-400"
+      class="w-w-3/5 w-mt-4 w-bg-lara-200 w-p-4 w-rounded-lg dark:w-bg-lara-800 dark:w-text-light-400"
     >
       <form @submit.prevent="updateConfig()">
         <div class="w-text-3xl w-text-center">Application Settings</div>
@@ -74,6 +74,28 @@
                   type="text"
                   required
                 />
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="field w-mt-3">
+              <label for="streamlink-live-params">Streamlink Live</label>
+              <small id="streamlink-live-params-help"
+                >Streamlink arugments for live archives (not vods).</small
+              >
+            </div>
+            <div>
+              <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">
+                  streamlink {url} {quality}
+                </span>
+                <InputText
+                  v-model="config.parameters.streamlink_live"
+                  id="streamlink-live-params"
+                  type="text"
+                  required
+                />
+                <span class="p-inputgroup-addon"> -o {output} </span>
               </div>
             </div>
           </div>
