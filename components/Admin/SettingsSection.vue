@@ -86,7 +86,8 @@
               <div class="field w-mt-1">
                 <label for="streamlink-live-params">Streamlink Live</label>
                 <small id="streamlink-live-params-help"
-                  >Streamlink arugments for live archives (not vods).</small
+                  >Streamlink arugments for live archives. Arguments must be
+                  comma (,) seperated.</small
                 >
               </div>
               <div>
@@ -101,30 +102,6 @@
                     required
                   />
                   <span class="p-inputgroup-addon"> -o {output} </span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div class="w-text-2xl w-mt-2">Twitch</div>
-            <div>
-              <div class="field w-mt-1">
-                <label for="twitch-user-access-token"
-                  >Twitch User Access Token</label
-                >
-                <small id="twitch-user-access-token-help"
-                  >Used for Streamlink to fetch ad-free HLS streams.</small
-                >
-              </div>
-              <div>
-                <div class="p-inputgroup">
-                  <Password
-                    v-model="config.twitch.user_access_token"
-                    id="twitch-user-access-token"
-                    :feedback="false"
-                    toggleMask="true"
-                    required
-                  />
                 </div>
               </div>
             </div>
