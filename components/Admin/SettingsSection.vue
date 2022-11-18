@@ -18,7 +18,8 @@
           for proper syntax and configuration options.
         </div>
         <!-- Checkbox section -->
-        <div class="w-flex">
+        <div class="w-text-2xl w-mt-2">Ganymede</div>
+        <div class="w-flex w-mt-3">
           <div class="field-checkbox">
             <Checkbox
               id="binary"
@@ -42,7 +43,8 @@
             />
           </div>
           <div>
-            <div class="field">
+            <div class="w-text-2xl w-mt-2">Video</div>
+            <div class="field w-mt-1">
               <label for="ffmpeg-params">Video Convert FFmpeg Params</label>
               <small id="ffmpeg-params-help"
                 >Post video download ffmpeg options.</small
@@ -61,7 +63,8 @@
               </div>
             </div>
           </div>
-          <div class="w-mt-3">
+          <div class="w-text-2xl w-mt-2">Chat Render</div>
+          <div class="w-mt-1">
             <div class="field">
               <label for="chat-render">Chat Render Params</label>
               <small id="chat-render-help">Chat render options.</small>
@@ -78,24 +81,51 @@
             </div>
           </div>
           <div>
-            <div class="field w-mt-3">
-              <label for="streamlink-live-params">Streamlink Live</label>
-              <small id="streamlink-live-params-help"
-                >Streamlink arugments for live archives (not vods).</small
-              >
-            </div>
+            <div class="w-text-2xl w-mt-2">Streamlink</div>
             <div>
-              <div class="p-inputgroup">
-                <span class="p-inputgroup-addon">
-                  streamlink {url} {quality}
-                </span>
-                <InputText
-                  v-model="config.parameters.streamlink_live"
-                  id="streamlink-live-params"
-                  type="text"
-                  required
-                />
-                <span class="p-inputgroup-addon"> -o {output} </span>
+              <div class="field w-mt-1">
+                <label for="streamlink-live-params">Streamlink Live</label>
+                <small id="streamlink-live-params-help"
+                  >Streamlink arugments for live archives (not vods).</small
+                >
+              </div>
+              <div>
+                <div class="p-inputgroup">
+                  <span class="p-inputgroup-addon">
+                    streamlink {url} {quality}
+                  </span>
+                  <InputText
+                    v-model="config.parameters.streamlink_live"
+                    id="streamlink-live-params"
+                    type="text"
+                    required
+                  />
+                  <span class="p-inputgroup-addon"> -o {output} </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="w-text-2xl w-mt-2">Twitch</div>
+            <div>
+              <div class="field w-mt-1">
+                <label for="twitch-user-access-token"
+                  >Twitch User Access Token</label
+                >
+                <small id="twitch-user-access-token-help"
+                  >Used for Streamlink to fetch ad-free HLS streams.</small
+                >
+              </div>
+              <div>
+                <div class="p-inputgroup">
+                  <Password
+                    v-model="config.twitch.user_access_token"
+                    id="twitch-user-access-token"
+                    :feedback="false"
+                    toggleMask="true"
+                    required
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -114,6 +144,7 @@ import { useToast } from "primevue/usetoast";
 import Checkbox from "primevue/checkbox";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
+import Password from "primevue/password";
 
 const toast = useToast();
 
